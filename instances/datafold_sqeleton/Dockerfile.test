@@ -1,0 +1,9 @@
+FROM python:3.8-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential git && rm -rf /var/lib/apt/lists/*
+COPY . .
+ENV PYTHONPATH=/root/code
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "runtype>=0.2.6" dsnparse "click>=8.1" rich "toml>=0.10.2" pytz \
+ && pip install --no-cache-dir parameterized unittest-parallel pytest
+CMD ["pytest", "tests/", "-v"]

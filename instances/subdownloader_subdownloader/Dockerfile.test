@@ -1,0 +1,9 @@
+FROM python:3.7-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt -r requirements_dev.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+CMD ["pytest", "tests/", "-v"]

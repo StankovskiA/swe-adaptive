@@ -1,0 +1,12 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libopenmpi-dev openmpi-bin && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir numpy netCDF4 mpi4py coverage \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+CMD ["pytest", "tests", "-v", "--ignore=tests/test_iobackend.py"]

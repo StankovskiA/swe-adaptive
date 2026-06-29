@@ -1,0 +1,10 @@
+FROM python:3.8-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "altair>=4.2.0,<5" pandas "gensim~=3.8.3" \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest pytest-cov \
+ && pip install --no-cache-dir "spacy>=3.3.0,<3.8.0"
+CMD ["pytest", "tests/", "-v", "--ignore=tests/test_transformers.py", "--ignore=tests/test_lang/test_fasttext_lang.py", "--ignore=tests/test_lang/test_hftransformers_lang.py", "--ignore=tests/test_lang/test_sent_tfm.py", "--ignore=tests/test_lang/test_tfhub_lang.py", "--ignore=tests/test_lang/test_universal_sentence_encoder.py", "--ignore=tests/test_documentation", "--ignore=tests/test_plotting/test_matplotlib/test_plot_3d.py", "--ignore=tests/test_sklearn/test_simple_pipeline.py", "--ignore=tests/test_sklearn/test_fasttext_sklearn.py", "--ignore=tests/test_plotting/test_dist_sim_plots.py"]

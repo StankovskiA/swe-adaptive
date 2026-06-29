@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libxml2-dev libxslt1-dev && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements/base.txt -r requirements/test.txt -r requirements/dev.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+RUN mkdir -p /root/code/var
+CMD ["pytest", "tests/unit/", "-v"]

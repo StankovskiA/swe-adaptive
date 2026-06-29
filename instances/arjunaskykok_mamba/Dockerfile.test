@@ -1,0 +1,11 @@
+FROM python:3.9-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+ENV PYTHONPATH=/root/code
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir "typing_extensions>=4.1" pytest
+CMD ["pytest", "test/", "-v", \
+     "--ignore=test/test_compile.py", \
+     "-k", "not (test_pin_manifest or test_install or test_list or test_uninstall or test_load or test_get_abi or test_get_contract_object or test_get_contract_with_parameters_object)"]

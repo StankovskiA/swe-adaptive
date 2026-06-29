@@ -1,0 +1,7 @@
+FROM python:3.13-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential git && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "runtype>=0.2.6" dsnparse "click>=8.1" rich "toml>=0.10.2" \
+ && pip install --no-cache-dir "duckdb>=0.7.0,<0.8.0"

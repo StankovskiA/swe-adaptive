@@ -1,0 +1,14 @@
+FROM python:3.8-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest parameterized
+# Run only converter tests that require no TensorFlow and no FPGA hardware.
+# Excluded: test_tf_io.py (TF), test_binary.py and test_generate_project.py (FPGA board)
+CMD ["pytest", "tests/converter/", "-v", \
+     "--ignore=tests/converter/test_tf_io.py", \
+     "--ignore=tests/converter/test_binary.py", \
+     "--ignore=tests/converter/test_generate_project.py", \
+     "--ignore=tests/converter/test_code_generation.py"]

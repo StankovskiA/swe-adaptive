@@ -1,0 +1,11 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libopenblas-dev && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "numpy<1.25" \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest \
+ && pip uninstall -y pytest-html || true
+CMD ["pytest", "tests", "-v", "-W", "ignore:Use shutil.which:DeprecationWarning"]

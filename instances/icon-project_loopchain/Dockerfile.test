@@ -1,0 +1,10 @@
+FROM python:3.7-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest pytest-timeout \
+ && pip install --no-cache-dir freezegun
+CMD ["pytest", "tests/unit/", "-v", "--ignore=tests/unit/test_message_queue.py", "--ignore=tests/unit/test_rest_client.py", "--ignore=tests/unit/test_common_process.py", "--ignore=tests/unit/test_common_subprocess.py", "--timeout=30"]

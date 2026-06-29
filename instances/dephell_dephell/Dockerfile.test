@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential git && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest requests-mock aioresponses appdirs fissix "packaging>=20,<22"
+# conda not installed (optional dep); test_conda excluded
+CMD ["pytest", "tests/", "-v", \
+     "-k", "not test_conda_loads and not test_conda_dumps_new"]

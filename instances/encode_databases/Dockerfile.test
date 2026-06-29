@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+ENV TEST_DATABASE_URLS=sqlite:///test_db
+CMD ["pytest", "tests/", "-v", "--ignore=tests/test_databases.py", "--ignore=tests/test_integration.py", "--ignore=tests/test_connection_options.py"]

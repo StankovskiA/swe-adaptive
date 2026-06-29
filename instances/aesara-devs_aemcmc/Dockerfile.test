@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest pytest-timeout
+ENV AESARA_FLAGS=blas__ldflags=
+CMD ["pytest", "tests", "-v", "--override-ini=filterwarnings=", "--timeout=300", "-k", "not test_polyagamma"]

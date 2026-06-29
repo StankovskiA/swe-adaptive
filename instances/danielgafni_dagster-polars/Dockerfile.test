@@ -1,0 +1,9 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "dagster<1.8" \
+ && pip install --no-cache-dir -e ".[deltalake]" \
+ && pip install --no-cache-dir hypothesis deepdiff "pytest<8" pytest-cases pytest-rerunfailures
+CMD ["pytest", "tests/", "-v"]

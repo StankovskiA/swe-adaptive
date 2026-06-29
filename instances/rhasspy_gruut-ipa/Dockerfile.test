@@ -1,0 +1,10 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements_test.txt -r requirements_dev.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir numpy \
+ && pip install --no-cache-dir "pytest>=7.0"
+CMD ["pytest", "tests/", "-v"]

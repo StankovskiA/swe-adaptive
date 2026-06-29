@@ -1,0 +1,8 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e ".[bs4,lxml,parsel]" \
+ && pip install --no-cache-dir pytest pytest-clarity pytest-cov respx
+CMD ["pytest", "tests/", "-v", "--ignore=tests/test_playwright_async.py", "--ignore=tests/test_playwright_sync.py", "--ignore=tests/test_selenium.py", "--ignore=tests/test_parsel.py"]

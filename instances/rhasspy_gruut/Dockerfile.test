@@ -1,0 +1,10 @@
+FROM python:3.8-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt -r requirements_test.txt -r requirements_dev.txt \
+ && pip install --no-cache-dir "gruut_lang_ar~=2.0" "gruut_lang_cs~=2.0" "gruut_lang_de~=2.0" "gruut_lang_es~=2.0" "gruut_lang_fa~=2.0" "gruut_lang_fr~=2.0" "gruut_lang_it~=2.0" "gruut_lang_nl~=2.0" "gruut_lang_pt~=2.0" "gruut_lang_ru~=2.0" "gruut_lang_sv~=2.0" "gruut_lang_sw~=2.0" \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+CMD ["pytest", "tests/", "-v"]

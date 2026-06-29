@@ -1,0 +1,14 @@
+FROM python:3.8-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential redis-server && rm -rf /var/lib/apt/lists/*
+COPY . .
+# skip requirements.txt: it pins tornado==2.4.1 and other 2013-era packages that conflict on Python 3.8
+# pycket itself only requires tornado; nose and redis are the test deps
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir nose redis
+# remove [nosetests] config block: it requires yanc/xtraceback plugins and sets cover-min-percentage=100
+RUN printf '[egg_info]\n' > setup.cfg
+# start Redis, wait for it, then run nosetests (tests use @istest decorator, not test_* names)
+# test_driver.py's MemcachedDriverTest requires python-memcache + running memcached; skipped entirely
+CMD ["sh", "-c", "redis-server --daemonize yes && sleep 0.5 && nosetests tests/test_session.py tests/test_notification.py tests/test_functional.py -v"]

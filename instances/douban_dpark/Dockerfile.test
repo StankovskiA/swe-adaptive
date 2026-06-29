@@ -1,0 +1,10 @@
+FROM python:3.7-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest flaky
+# strip Windows CRLF line endings so partialTextFile (raw bytes) matches open() (universal newlines)
+RUN find /root/code -name "*.py" -exec sed -i 's/\r$//' {} \;
+CMD ["pytest", "tests/", "-v"]

@@ -1,0 +1,10 @@
+FROM python:3.9-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir "markupsafe<2.1" \
+ && pip install --no-cache-dir -r test-requirements.txt \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir "pytest>=4.6,<5" "pytest-cov>=2.6,<3.0"
+CMD ["pytest", "tests/", "-v"]

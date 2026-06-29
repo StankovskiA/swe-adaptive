@@ -1,0 +1,13 @@
+FROM python:3.7-slim
+WORKDIR /root/code
+RUN find /etc/apt -name "*.list" -exec sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g; /stretch-updates/d' {} \; \
+ && apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir mock freezegun pygal pytest pytest-benchmark unittest2 tox pylama || true \
+ && pip install --no-cache-dir graphite-web pytz carbon whisper Django "Django>=1.8,<1.11.99" || true \
+ && pip install --no-cache-dir opencensus==0.5.0 gourde==0.2.1 flask-restplus || true \
+ && pip install --no-cache-dir testing.cassandra3 testing.elasticsearch6 dpkt || true \
+ && pip install --no-cache-dir -e .
+CMD ["pytest", "tests/", "-v", "--ignore=tests/drivers/test_elasticsearch.py", "--ignore=tests/plugins/test_carbon.py", "--ignore=tests/plugins/test_graphite.py", "--ignore=tests/plugins/test_tags.py", "--ignore=tests/cli/test_bg_carbon_aggregator_cache.py", "--ignore=tests/cli/test_bg_carbon_cache.py", "--ignore=tests/cli/test_import_whisper.py", "--ignore=tests/cli/web", "--ignore=tests/test_metadata_cache.py", "--ignore=tests/test_tracing.py", "--ignore=tests/test_settings.py", "--ignore=tests/cli/test_command_graphite_web.py"]

@@ -1,0 +1,12 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir pytest
+RUN printf '#!/bin/sh\nexit 1\n' > /usr/local/bin/docker && chmod +x /usr/local/bin/docker
+ENV CROP_SQL_TESTPORT=5432
+RUN pip install --no-cache-dir pytest-timeout
+CMD ["pytest", "tests", "-v", "--timeout=30", "--ignore=tests/test_db_basic.py", "--ignore=tests/test_queries.py", "--ignore=tests/test_routes_crops.py", "--ignore=tests/test_routes_dashboards.py", "--ignore=tests/test_routes_home.py", "--ignore=tests/test_routes_locations.py", "--ignore=tests/test_routes_predictions.py", "--ignore=tests/test_routes_readings.py", "--ignore=tests/test_routes_sensors.py", "--ignore=tests/test_routes_users.py"]

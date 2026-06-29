@@ -1,0 +1,11 @@
+FROM python:3.7-slim
+WORKDIR /root/code
+RUN find /etc/apt -name "*.list" -exec sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g; /stretch-updates/d' {} \; \
+ && apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt \
+ && pip install --no-cache-dir -e examples/clusterman_metrics \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest
+CMD ["pytest", "tests/", "-v"]

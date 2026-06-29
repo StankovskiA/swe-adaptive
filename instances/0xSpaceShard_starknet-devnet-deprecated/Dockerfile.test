@@ -1,0 +1,17 @@
+FROM python:3.9-slim
+WORKDIR /root/code
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest-xdist pytest-timeout \
+ && pip install --no-cache-dir "typing_extensions>=4.5" \
+ && pip install --no-cache-dir psutil
+RUN printf '#!/bin/sh\nif [ "$1" = "run" ]; then shift; fi\nexec "$@"\n' > /usr/local/bin/poetry && chmod +x /usr/local/bin/poetry
+RUN for contract in test/contracts/cairo/*.cairo; do \
+      name=$(basename "$contract" .cairo); \
+      dir="test/artifacts/contracts/cairo/${name}.cairo"; \
+      mkdir -p "$dir"; \
+      starknet-compile-deprecated --output "$dir/${name}.json" --abi "$dir/${name}_abi.json" "$contract"; \
+    done
+CMD ["pytest", "test/rpc/", "-v", "--timeout=60"]
