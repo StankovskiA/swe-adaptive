@@ -1,0 +1,10 @@
+.git
+__pycache__
+*.pyc
+*.egg-info
+.env
+.tox
+build
+virtualenv_run
+venv
+docker-venv

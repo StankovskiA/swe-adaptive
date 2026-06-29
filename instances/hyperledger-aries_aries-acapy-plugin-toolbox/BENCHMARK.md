@@ -22,7 +22,7 @@ All 48 tests pass on Python 3.7.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `aries-cloudagent` 0.7.x wheel has invalid PEP 440 metadata; pip ≥24.1 rejects it
 
 ```
 #9 7.742 ERROR: Ignored the following yanked versions: 0.10.0
@@ -47,9 +47,9 @@ _Dockerfile_tmp_hyperledger-aries_aries-acapy-plugin-toolbox:5
    4 |     COPY . .
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `aries-acapy-plugin-toolbox` pins `aries-cloudagent>=0.7.4,<0.8.0`. The `aries_cloudagent-0.7.4` wheel contains invalid PEP 440 metadata: `python3-indy (>=1.11.1<2)` — missing comma between `>=1.11.1` and `<2`. pip ≥24.1 (bundled with Python 3.13) strictly validates wheel metadata and rejects this entry with `Ignoring version 0.7.4 … has invalid metadata`. All 0.7.x versions have the same issue, so the entire pinned range becomes uninstallable.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Widen the `aries-cloudagent` constraint to `>=1.0.0` (which has valid metadata) and update the code for any breaking API changes in the newer ACA-Py releases.
 
 ---
 
@@ -57,4 +57,4 @@ _Dockerfile_tmp_hyperledger-aries_aries-acapy-plugin-toolbox:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `aries-cloudagent` 0.7.x wheel metadata contains invalid PEP 440 specifier (`python3-indy (>=1.11.1<2)` — missing comma); pip ≥24.1 (Python 3.13) rejects it → no installable version in `>=0.7.4,<0.8.0` range | Widen constraint to `aries-cloudagent>=1.0.0` in `setup.cfg` |

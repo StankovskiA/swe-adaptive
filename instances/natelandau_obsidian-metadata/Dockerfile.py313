@@ -1,0 +1,7 @@
+FROM python:3.13-slim
+WORKDIR /root/code
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir coverage pytest pytest-clarity pytest-mock pytest-pretty-terminal pytest-xdist coverage
+RUN pytest src tests -v

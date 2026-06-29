@@ -1,0 +1,13 @@
+FROM python:3.13-slim
+WORKDIR /root/code
+COPY . .
+# On Python 3.13 this build FAILS at the install step:
+# setuptools<66 ships an old pkg_resources that calls pkgutil.ImpImporter,
+# which was removed in Python 3.12 (PEP 594 / bpo-40356).
+# Error: AttributeError: module 'pkgutil' has no attribute 'ImpImporter'
+RUN touch README.rst CHANGELOG.rst \
+ && pip install --no-cache-dir --upgrade pip "setuptools<66" \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir --no-build-isolation . \
+ && pip install --no-cache-dir pytest six
+RUN pytest tests/test_base.py -v

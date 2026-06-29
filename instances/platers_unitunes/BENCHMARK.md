@@ -22,7 +22,7 @@ All 11 tests pass on Python 3.10.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `dearpygui` 1.x no longer available on PyPI; only 2.x exists
 
 ```
 #9 5.004 ERROR: Could not find a version that satisfies the requirement dearpygui<2.0.0,>=1.6.2 (from unitunes) (from versions: 2.0.0rc1, 2.0.0, 2.1.0, 2.1.1, 2.2, 2.3, 2.3.1)
@@ -47,9 +47,9 @@ _Dockerfile_tmp_platers_unitunes:5
    5 | >>> RUN pip install --no-cache-dir --upgrade pip \
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `unitunes` requires `dearpygui>=1.6.2,<2.0.0`. The `dearpygui` 1.x release series has been removed from PyPI — only versions 2.0.0rc1 and later remain. On Python 3.10 the baseline Docker would have been built when 1.x was still available, but on Python 3.13 pip cannot find any installable version in the `>=1.6.2,<2.0.0` range.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Upgrade the `dearpygui` dependency to `>=2.0.0` and update any API calls that changed between `dearpygui` 1.x and 2.x.
 
 ---
 
@@ -57,4 +57,4 @@ _Dockerfile_tmp_platers_unitunes:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `dearpygui>=1.6.2,<2.0.0` — all 1.x versions removed from PyPI; only 2.x remains → `No matching distribution found` | Upgrade to `dearpygui>=2.0.0` and adapt to the 2.x API |

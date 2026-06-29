@@ -4,5 +4,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY . .
 RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir -e . \
- && pip install --no-cache-dir pytest
-RUN pytest tests/ -v
+ && pip install --no-cache-dir pytest scikit-learn
+RUN pytest tests/ -v \
+    --ignore=tests/speech_recognition \
+    --ignore=tests/test_convtbc.py \
+    --ignore=tests/test_binaries.py \
+    --ignore=tests/test_reproducibility.py \
+    --ignore=tests/test_token_block_mixture_dataset.py

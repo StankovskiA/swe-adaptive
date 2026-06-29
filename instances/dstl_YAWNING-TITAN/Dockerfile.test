@@ -1,0 +1,48 @@
+FROM python:3.10.14-slim
+
+COPY ./ /root/code
+RUN apt-get update && apt-get install gcc -y
+
+RUN pip install --upgrade pip && pip install "setuptools==66"
+
+# Download the gym==0.21.0 source tarball directly via the PyPI JSON API,
+# bypassing pip's wheel-build step (which rejects the invalid "opencv-python>=3."
+# version specifier in gym's setup.py).
+RUN python3 -c "\
+import json, urllib.request; \
+info = json.loads(urllib.request.urlopen('https://pypi.org/pypi/gym/0.21.0/json').read()); \
+url = next(u['url'] for u in info['urls'] if u['filename'].endswith('.tar.gz')); \
+urllib.request.urlretrieve(url, '/tmp/gym-0.21.0.tar.gz'); \
+print('Downloaded', url)"
+
+RUN tar -xzf /tmp/gym-0.21.0.tar.gz -C /tmp
+
+RUN python3 -c 'content = open("/tmp/gym-0.21.0/setup.py").read(); open("/tmp/gym-0.21.0/setup.py", "w").write(content.replace("opencv-python>=3.", "opencv-python>=3.0"))'
+
+RUN pip install --no-build-isolation /tmp/gym-0.21.0
+
+# Install CPU-only torch before the main install so pip does not pull the GPU build.
+# PEP 440: torch==1.13.1+cpu satisfies the torch==1.13.1 constraint in pyproject.toml.
+RUN pip install "torch==1.13.1+cpu" --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Install the project with dev dependencies
+RUN cd /root/code && pip install -e ".[dev]"
+
+# Create runtime directories expected by the app at import time
+RUN mkdir -p \
+    /root/yawning_titan/images \
+    /root/yawning_titan/videos \
+    /root/yawning_titan/notebooks \
+    /root/yawning_titan/game_modes \
+    /root/yawning_titan/agents/logs \
+    /root/.local/share/yawning_titan/app_images \
+    /root/.cache/yawning_titan/log
+
+# Seed the live DB with test package data so that:
+#   - default_game_mode() finds UUID 900a704f (needed by tests/gui/__init__.py)
+#   - default_18_node_network() finds UUID b3cd9dfd (needed by unit_tests/network)
+RUN mkdir -p /root/.local/share/yawning_titan/db && \
+    cp /root/code/tests/_package_data/game_modes.json /root/.local/share/yawning_titan/db/ && \
+    cp /root/code/tests/_package_data/networks.json /root/.local/share/yawning_titan/db/
+
+CMD ["bash", "-c", "cd /root/code && pytest tests/ --ignore=tests/gui --ignore=tests/e2e_integration_tests --ignore=tests/integration_tests -q"]

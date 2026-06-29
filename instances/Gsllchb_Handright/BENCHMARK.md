@@ -22,7 +22,7 @@ All 16 tests pass on Python 3.8.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — Old Pillow `setup.py` uses `exec()` to read version; Python 3.13 `exec()` locals change → `KeyError: '__version__'`
 
 ```
 #9 9.015   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 16 tests pass on Python 3.8.
 #9 9.015           ~~~~~~~~~~~~~~^^
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `requirements.txt` pins an old version of Pillow whose `setup.py` uses `exec(open("src/PIL/_version.py").read(), {})` to extract `__version__`. Python 3.13 changed how `exec()` populates the `locals()` dict (assignments in the executed code no longer propagate back to the outer scope), so the subsequent `__version__` lookup raises `KeyError: '__version__'`.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Pin `Pillow` to ≥10.0.0 in `requirements.txt`, which ships pre-built Python 3.13 wheels and uses a modern build backend that doesn't rely on `exec()` for version reading.
 
 ---
 
@@ -57,4 +57,4 @@ All 16 tests pass on Python 3.8.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | Old Pillow `setup.py` uses `exec()` to read `__version__`; Python 3.13 changed `exec()` locals handling → `KeyError: '__version__'` | Pin `Pillow>=10.0.0` in `requirements.txt` |

@@ -22,7 +22,7 @@ All 323 tests pass on Python 3.8.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — Cython C extension incompatible with Python 3.13 C API
 
 ```
 #9 7.631   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 323 tests pass on Python 3.8.
 #9 7.631       writing /tmp/pip-ephem-wheel-cache-yji43don/wheels/44/45/32/d3e940b1091f8232ad46ed69e6a343cc3d1cdc55bd12aeb96a/tmp9b0id7um/.tmp-_bwjmzj3/hmrb.egg-info/PKG-INFO
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** The Cython-generated `hmrb/core.c` calls internal CPython API functions (`_PyDict_SetItem_KnownHash`, `_PyUnicode_FastCopyCharacters`, `_PyLong_AsByteArray`) that were removed or had their signatures changed in Python 3.13. These are private `_Py*` APIs that old Cython versions (pre-3.0) used to emit in generated C code.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Regenerate the Cython extension with Cython ≥3.0, which emits Python 3.13-compatible C code that uses only stable public APIs.
 
 ---
 
@@ -57,4 +57,4 @@ All 323 tests pass on Python 3.8.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | Cython-generated `core.c` calls removed internal CPython APIs (`_PyDict_SetItem_KnownHash`, `_PyUnicode_FastCopyCharacters`, `_PyLong_AsByteArray`) | Regenerate with Cython ≥3.0 |

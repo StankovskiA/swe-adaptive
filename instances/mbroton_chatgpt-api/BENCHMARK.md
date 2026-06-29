@@ -22,10 +22,15 @@ All 22 tests pass on Python 3.7.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `pytest_httpx` 0.21.2 wheel has invalid PEP 440 metadata; pip ≥24.1 rejects it
 
 ```
-#9 2.243 ERROR: Could not find a version that satisfies the requirement pytest_httpx==0.21.2 (from versions: 0.0.1, 0.0.2, 0.0.3, 0.0.4, 0.0.5, 0.1.0, 0.2.0, 0.2.1, 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.7.0, 0.8.0, 0.9.0, 0.10.0, 0.10.1, 0.11.0, 0.12.0, 0.12.1, 0.13.0, 0.14.0, 0.15.0, 0.16.0, 0.17.0, 0.17.1, 0.17.2, 0.17.3, 0.18.0, 0.19.0, 0.20.0, 0.21.0, 0.21.1, 0.21.2, 0.21.3, 0.22.0, 0.23.0, 0.23.1, 0.24.0, 0.25.0, 0.26.0, 0.27.0, 0.28.0, 0.29.0, 0.30.0, 0.31.0, 0.31.1, 0.31.2, 0.32.0, 0.33.0, 0.34.0, 0.35.0, 0.36.0, 0.36.2)
+#9 2.243 WARNING: Ignoring version 0.21.2 of pytest_httpx since it has invalid metadata:
+#9 2.243 Requested pytest_httpx==0.21.2 ... has invalid metadata: .* suffix can only be used with `==` or `!=` operators
+#9 2.243     pytest (<8.*,>=6.*)
+#9 2.243             ~~~^
+#9 2.243 Please use pip<24.1 if you need to use this version.
+#9 2.243 ERROR: Could not find a version that satisfies the requirement pytest_httpx==0.21.2 (from versions: 0.0.1, ..., 0.36.2)
 #9 2.243 ERROR: No matching distribution found for pytest_httpx==0.21.2
 #9 ERROR: process "/bin/sh -c pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir -r requirements.txt  && pip install --no-cache-dir -e .  && pip install --no-cache-dir pytest" did not complete successfully: exit code: 1
 ------
@@ -47,9 +52,9 @@ _Dockerfile_tmp_mbroton_chatgpt-api:5
    5 | >>> RUN pip install --no-cache-dir --upgrade pip \
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `requirements.txt` pins `pytest_httpx==0.21.2`. That wheel's metadata declares `pytest (<8.*,>=6.*)` — using the PEP 440 wildcard `.*` with the `<` operator, which is illegal (wildcards are only valid with `==` and `!=`). pip ≥24.1 (shipped with Python 3.13) strictly validates wheel metadata and silently skips the version with a warning, leaving no installable candidate for the exact pin.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Upgrade `pytest_httpx` to `>=0.22.0` in `requirements.txt`, which corrected its dependency metadata.
 
 ---
 
@@ -57,4 +62,4 @@ _Dockerfile_tmp_mbroton_chatgpt-api:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `pytest_httpx==0.21.2` wheel metadata uses `pytest (<8.*,>=6.*)` — invalid PEP 440 (`.*` only valid with `==`/`!=`); pip ≥24.1 (Python 3.13) rejects it → no installable version | Upgrade `pytest_httpx` to `>=0.22.0` in `requirements.txt` |

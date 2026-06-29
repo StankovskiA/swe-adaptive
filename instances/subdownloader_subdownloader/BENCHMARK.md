@@ -22,34 +22,26 @@ All 27 tests pass on Python 3.7.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `setup.py` imports `sphinx` at module level; absent from pip build isolation env
 
 ```
 #9 22.73   error: subprocess-exited-with-error
 #9 22.73   
-#9 22.73   × Getting requirements to build editable did not run successfully.
-#9 22.73   │ exit code: 1
-#9 22.73   ╰─> [26 lines of output]
+#9 22.73   x Getting requirements to build editable did not run successfully.
+#9 22.73   | exit code: 1
+#9 22.73   +-> [26 lines of output]
 #9 22.73       Traceback (most recent call last):
-#9 22.73         File "/usr/local/lib/python3.13/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 389, in <module>
-#9 22.73           main()
-#9 22.73           ~~~~^^
-#9 22.73         File "/usr/local/lib/python3.13/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 373, in main
-#9 22.73           json_out["return_val"] = hook(**hook_input["kwargs"])
-#9 22.73                                    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-#9 22.73         File "/usr/local/lib/python3.13/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 157, in get_requires_for_build_editable
-#9 22.73           return hook(config_settings)
-#9 22.73         File "/tmp/pip-build-env-_ygxpqrz/overlay/lib/python3.13/site-packages/setuptools/build_meta.py", line 481, in get_requires_for_build_editable
-#9 22.73           return self.get_requires_for_build_wheel(config_settings)
-#9 22.73                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-#9 22.73         File "/tmp/pip-build-env-_ygxpqrz/overlay/lib/python3.13/site-packages/setuptools/build_meta.py", line 333, in get_requires_for_build_wheel
+#9 22.73         File ".../setuptools/build_meta.py", line 333, in get_requires_for_build_wheel
 #9 22.73           return self._get_build_requires(config_settings, requirements=[])
-#9 22.73                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#9 22.73       ...
+#9 22.73       ModuleNotFoundError: No module named 'sphinx'
+#9 22.73   note: This error originates from a subprocess, and is likely not a problem with pip.
+#9 22.73 ERROR: Failed to build 'file:///root/code' when getting requirements to build editable
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `setup.py` imports `sphinx` at module level (to introspect extensions or build docs metadata). pip (as shipped with Python 3.13) executes `setup.py` in a fully isolated build environment that contains only build-system dependencies. Even though `sphinx` was installed from `requirements_dev.txt` in the previous step, it is invisible inside the isolated subprocess, causing `ModuleNotFoundError: No module named 'sphinx'`. Older pip on Python 3.7 ran `setup.py` in the ambient environment where the prior install was visible.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Add `sphinx` to `build-system.requires` in `setup.cfg`, or move the sphinx import inside the function body so it is only executed at runtime, not during the metadata step.
 
 ---
 
@@ -57,4 +49,4 @@ All 27 tests pass on Python 3.7.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `setup.py` imports `sphinx` at module level; pip's build isolation (enforced by modern pip/Python 3.13) hides it → `ModuleNotFoundError: No module named 'sphinx'` | Add `sphinx` to `build-system.requires` in `setup.cfg` or guard the import |

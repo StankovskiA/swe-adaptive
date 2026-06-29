@@ -1,0 +1,20 @@
+FROM python:3.10-slim
+
+WORKDIR /root/code
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml poetry.lock manage.py setup.cfg README.md ./
+COPY openapi_tester/ openapi_tester/
+COPY test_project/ test_project/
+COPY tests/ tests/
+
+RUN pip install --upgrade pip && \
+    pip install "poetry==1.7.1" && \
+    poetry config virtualenvs.create false && \
+    poetry install --extras "drf-spectacular drf-yasg"
+
+CMD ["pytest", "tests/", "-q"]

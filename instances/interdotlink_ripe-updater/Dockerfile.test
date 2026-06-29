@@ -1,0 +1,15 @@
+FROM python:3.10-slim
+
+WORKDIR /root/code
+
+COPY . .
+
+# werkzeug 3.x removed url_quote which flask==2.1.1 depends on; pin to 2.x
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir \
+      -r requirements.txt \
+      "werkzeug<3.0" \
+      -r test-requirements.txt \
+ && pip install --no-cache-dir -e .
+
+CMD ["pytest", "tests/", "-v"]

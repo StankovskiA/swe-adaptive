@@ -1,0 +1,7 @@
+FROM python:3.13-slim
+WORKDIR /root/code
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -e . \
+ && pip install --no-cache-dir pytest pytest-asyncio pytest-cov responses
+RUN pytest tests/ -v

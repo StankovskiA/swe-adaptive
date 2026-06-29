@@ -1,0 +1,17 @@
+FROM python:3.13-slim
+
+WORKDIR /root/code
+
+COPY . .
+
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir \
+      "Django>=3.2,<4.0" \
+      "pydantic>=1.8.2,<2.0" \
+      pytest \
+      pytest-django \
+      factory-boy \
+      psycopg2-binary \
+ && pip install --no-cache-dir -e .
+
+RUN pytest tests/ -q

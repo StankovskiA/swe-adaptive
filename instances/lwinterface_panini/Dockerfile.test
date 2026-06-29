@@ -1,0 +1,23 @@
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget unzip curl git gcc g++ make \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install NATS server
+RUN wget -q https://github.com/nats-io/nats-server/releases/download/v2.10.7/nats-server-v2.10.7-linux-amd64.zip \
+    && unzip -q nats-server-v2.10.7-linux-amd64.zip \
+    && mv nats-server-v2.10.7-linux-amd64/nats-server /usr/local/bin/ \
+    && rm -rf nats-server-v2.10.7-linux-amd64*
+
+WORKDIR /root/code
+COPY . .
+
+# Restore original imports (revert benchmark-collection path modifications)
+RUN git checkout HEAD -- panini/ tests/ examples/
+
+RUN pip install --upgrade pip --quiet && \
+    pip install -r requirements/defaults.txt --quiet && \
+    pip install -e . --quiet
+
+CMD ["bash", "-c", "nats-server -p 4222 &>/dev/null & sleep 1 && pytest tests/ -q --ignore=tests/emulator --ignore=tests/async_test_client 2>&1"]

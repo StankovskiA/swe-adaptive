@@ -22,34 +22,20 @@ All 112 tests pass on Python 3.9.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `python_requires = ">=3.7,<3.10"` explicitly excludes Python 3.13
 
 ```
 #9 6.040 ERROR: Package 'pipelinewise-tap-postgres' requires a different Python: 3.13.14 not in '<3.10,>=3.7'
 #9 ERROR: process "/bin/sh -c pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir -e .  && pip install --no-cache-dir pytest" did not complete successfully: exit code: 1
 ------
  > [5/5] RUN pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir -e .  && pip install --no-cache-dir pytest:
-3.713   Installing build dependencies: started
-4.889   Installing build dependencies: finished with status 'done'
-4.891   Checking if build backend supports build_editable: started
-5.311   Checking if build backend supports build_editable: finished with status 'done'
-5.312   Getting requirements to build editable: started
-5.603   Getting requirements to build editable: finished with status 'done'
-5.606   Preparing editable metadata (pyproject.toml): started
-6.006   Preparing editable metadata (pyproject.toml): finished with status 'done'
 6.039 INFO: pip is looking at multiple versions of pipelinewise-tap-postgres to determine which version is compatible with other requirements. This could take a while.
 6.040 ERROR: Package 'pipelinewise-tap-postgres' requires a different Python: 3.13.14 not in '<3.10,>=3.7'
-------
-_Dockerfile_tmp_transferwise_pipelinewise-tap-postgres:5
---------------------
-   4 |     COPY . .
-   5 | >>> RUN pip install --no-cache-dir --upgrade pip \
-   6 | >>>  && pip install --no-cache-dir -e . \
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `setup.py` (or `setup.cfg`) declares `python_requires=">=3.7,<3.10"`, explicitly capping support at Python 3.9. pip enforces this constraint and refuses to install the package on Python 3.13.14.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Widen the constraint to `python_requires=">=3.7"` in `setup.cfg` and verify that any Python-version-specific code (likely psycopg2 usage or PostgreSQL-specific typing) works on Python 3.13.
 
 ---
 
@@ -57,4 +43,4 @@ _Dockerfile_tmp_transferwise_pipelinewise-tap-postgres:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `setup.cfg` declares `python_requires=">=3.7,<3.10"` — pip refuses to install on Python 3.13.14 | Widen to `python_requires=">=3.7"` in `setup.cfg` |

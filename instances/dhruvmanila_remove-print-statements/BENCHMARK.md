@@ -22,7 +22,7 @@ All 41 tests pass on Python 3.10.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `libcst` 0.4.x pinned, no Python 3.13 wheels, source build fails
 
 ```
 #9 6.159   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 41 tests pass on Python 3.10.
 #9 6.159               ********************************************************************************
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `remove-print-statements` pins `libcst<0.5.0,>=0.4.2`, resolving to `libcst==0.4.10`. That release only ships pre-built wheels for Python ≤3.10 (`cp310`). On Python 3.13, pip falls back to building from source, where libcst's Cython-generated C extension fails to compile against the Python 3.13 C API (internal `_Py*` symbols removed or changed).
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Relax the upper bound on `libcst` in `setup.cfg`/`pyproject.toml` to allow ≥1.0.0, which ships Python 3.13-compatible pre-built wheels.
 
 ---
 
@@ -57,4 +57,4 @@ All 41 tests pass on Python 3.10.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `libcst<0.5.0` pins to 0.4.x — no Python 3.13 wheels; source build fails against Python 3.13 C API | Relax to `libcst>=0.4.2` (drop upper bound) or pin to `libcst>=1.0.0` |

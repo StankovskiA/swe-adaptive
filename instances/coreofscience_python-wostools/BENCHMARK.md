@@ -22,7 +22,7 @@ All 26 tests pass on Python 3.7.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — Invalid version specifier in `install_requires` rejected by newer setuptools
 
 ```
 #9 14.84   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 26 tests pass on Python 3.7.
 #9 14.84
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `setup.py` declares `install_requires = ["Click>=7.0<8", ...]` which is invalid PEP 440 syntax — the comma between `>=7.0` and `<8` is missing. Python 3.7's older setuptools accepted this silently, but newer setuptools (required for Python 3.13) validates version specifiers strictly and raises an error during metadata generation.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Fix the specifier to `Click>=7.0,<8` in `setup.py`.
 
 ---
 
@@ -57,4 +57,4 @@ All 26 tests pass on Python 3.7.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `install_requires` contains `Click>=7.0<8` — missing comma makes it invalid PEP 440; newer setuptools rejects it | Change to `Click>=7.0,<8` in `setup.py` |

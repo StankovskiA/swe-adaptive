@@ -22,34 +22,21 @@ All 841 tests pass on Python 3.10.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `numpy==1.21.4` declares `Requires-Python >=3.7,<3.11`; excluded on Python 3.13
 
 ```
-#9 9.882 ERROR: Ignored the following yanked versions: 2.4.0
-#9 9.882 ERROR: Ignored the following versions that require a different python version: 1.21.2 Requires-Python >=3.7,<3.11; 1.21.3 Requires-Python >=3.7,<3.11; 1.21.4 Requires-Python >=3.7,<3.11; 1.21.5 Requires-Python >=3.7,<3.11; 1.21.6 Requires-Python >=3.7,<3.11; 1.26.0 Requires-Python >=3.9,<3.13; 1.26.1 Requires-Python >=3.9,<3.13
-#9 9.882 ERROR: Could not find a version that satisfies the requirement numpy==1.21.4 (from versions: 1.3.0, 1.4.1, 1.5.0, 1.5.1, 1.6.0, 1.6.1, 1.6.2, 1.7.0, 1.7.1, 1.7.2, 1.8.0, 1.8.1, 1.8.2, 1.9.0, 1.9.1, 1.9.2, 1.9.3, 1.10.0.post2, 1.10.1, 1.10.2, 1.10.4, 1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, 1.12.1, 1.13.0, 1.13.1, 1.13.3, 1.14.0, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.14.5, 1.14.6, 1.15.0, 1.15.1, 1.15.2, 1.15.3, 1.15.4, 1.16.0, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.16.5, 1.16.6, 1.17.0, 1.17.1, 1.17.2, 1.17.3, 1.17.4, 1.17.5, 1.18.0, 1.18.1, 1.18.2, 1.18.3, 1.18.4, 1.18.5, 1.19.0, 1.19.1, 1.19.2, 1.19.3, 1.19.4, 1.19.5, 1.20.0, 1.20.1, 1.20.2, 1.20.3, 1.21.0, 1.21.1, 1.22.0, 1.22.1, 1.22.2, 1.22.3, 1.22.4, 1.23.0, 1.23.1, 1.23.2, 1.23.3, 1.23.4, 1.23.5, 1.24.0, 1.24.1, 1.24.2, 1.24.3, 1.24.4, 1.25.0, 1.25.1, 1.25.2, 1.26.2, 1.26.3, 1.26.4, 2.0.0, 2.0.1, 2.0.2, 2.1.0, 2.1.1, 2.1.2, 2.1.3, 2.2.0, 2.2.1, 2.2.2, 2.2.3, 2.2.4, 2.2.5, 2.2.6, 2.3.0, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.3.5, 2.4.0rc1, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.4.5, 2.4.6, 2.5.0rc1)
+#9 9.882 ERROR: Ignored the following versions that require a different python version:
+         1.21.4 Requires-Python >=3.7,<3.11
+         1.26.0 Requires-Python >=3.9,<3.13
+         1.26.1 Requires-Python >=3.9,<3.13
+#9 9.882 ERROR: Could not find a version that satisfies the requirement numpy==1.21.4
+         (from versions: ..., 1.21.0, 1.21.1, 1.22.0, ..., 2.5.0)
 #9 9.882 ERROR: No matching distribution found for numpy==1.21.4
-#9 ERROR: process "/bin/sh -c pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir -r requirements.txt  && pip install --no-cache-dir -e .  && pip install --no-cache-dir pytest pytest-cov pytest-benchmark" did not complete successfully: exit code: 1
-------
- > [5/5] RUN pip install --no-cache-dir --upgrade pip  && pip install --no-cache-dir -r requirements.txt  && pip install --no-cache-dir -e .  && pip install --no-cache-dir pytest pytest-cov pytest-benchmark:
-9.571 Collecting mkdocs==1.2.3 (from -r requirements.txt (line 30))
-9.593   Downloading mkdocs-1.2.3-py3-none-any.whl.metadata (4.7 kB)
-9.607 Collecting mypy-extensions==0.4.3 (from -r requirements.txt (line 31))
-9.617   Downloading mypy_extensions-0.4.3-py2.py3-none-any.whl.metadata (1.2 kB)
-9.699 Collecting mypy==0.910 (from -r requirements.txt (line 32))
-9.716   Downloading mypy-0.910-py3-none-any.whl.metadata (1.6 kB)
-9.882 ERROR: Ignored the following yanked versions: 2.4.0
-9.882 ERROR: Ignored the following versions that require a different python version: 1.21.2 Requires-Python >=3.7,<3.11; 1.21.3 Requires-Python >=3.7,<3.11; 1.21.4 Requires-Python >=3.7,<3.11; 1.21.5 Requires-Python >=3.7,<3.11; 1.21.6 Requires-Python >=3.7,<3.11; 1.26.0 Requires-Python >=3.9,<3.13; 1.26.1 Requires-Python >=3.9,<3.13
-9.882 ERROR: Could not find a version that satisfies the requirement numpy==1.21.4 (from versions: 1.3.0, 1.4.1, 1.5.0, 1.5.1, 1.6.0, 1.6.1, 1.6.2, 1.7.0, 1.7.1, 1.7.2, 1.8.0, 1.8.1, 1.8.2, 1.9.0, 1.9.1, 1.9.2, 1.9.3, 1.10.0.post2, 1.10.1, 1.10.2, 1.10.4, 1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, 1.12.1, 1.13.0, 1.13.1, 1.13.3, 1.14.0, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.14.5, 1.14.6, 1.15.0, 1.15.1, 1.15.2, 1.15.3, 1.15.4, 1.16.0, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.16.5, 1.16.6, 1.17.0, 1.17.1, 1.17.2, 1.17.3, 1.17.4, 1.17.5, 1.18.0, 1.18.1, 1.18.2, 1.18.3, 1.18.4, 1.18.5, 1.19.0, 1.19.1, 1.19.2, 1.19.3, 1.19.4, 1.19.5, 1.20.0, 1.20.1, 1.20.2, 1.20.3, 1.21.0, 1.21.1, 1.22.0, 1.22.1, 1.22.2, 1.22.3, 1.22.4, 1.23.0, 1.23.1, 1.23.2, 1.23.3, 1.23.4, 1.23.5, 1.24.0, 1.24.1, 1.24.2, 1.24.3, 1.24.4, 1.25.0, 1.25.1, 1.25.2, 1.26.2, 1.26.3, 1.26.4, 2.0.0, 2.0.1, 2.0.2, 2.1.0, 2.1.1, 2.1.2, 2.1.3, 2.2.0, 2.2.1, 2.2.2, 2.2.3, 2.2.4, 2.2.5, 2.2.6, 2.3.0, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.3.5, 2.4.0rc1, 2.4.1, 2.4.2, 2.4.3, 2.4.4, 2.4.5, 2.4.6, 2.5.0rc1)
-9.882 ERROR: No matching distribution found for numpy==1.21.4
-------
-_Dockerfile_tmp_seandstewart_typical:5
---------------------
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `requirements.txt` pins `numpy==1.21.4`. That exact release declares `Requires-Python >=3.7,<3.11`, which explicitly excludes Python 3.13. pip correctly refuses to install it — note the "Ignored versions that require a different python version" message. The version does exist on PyPI but pip enforces the metadata constraint.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Upgrade `numpy` in `requirements.txt` to `>=2.0.0` (the oldest numpy series with Python 3.13 wheels) and ensure any numpy 1.x API usages are compatible with numpy 2.x.
 
 ---
 
@@ -57,4 +44,4 @@ _Dockerfile_tmp_seandstewart_typical:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `numpy==1.21.4` declares `Requires-Python >=3.7,<3.11`; pip on Python 3.13 correctly skips it → `No matching distribution found` | Upgrade `numpy` to `>=2.0.0` in `requirements.txt` |

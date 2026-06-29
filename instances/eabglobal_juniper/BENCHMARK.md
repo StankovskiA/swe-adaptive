@@ -22,7 +22,7 @@ All 24 tests pass on Python 3.8.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `ipdb` uses `use_2to3` setuptools option removed in Python 3.12+
 
 ```
 #9 4.739   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 24 tests pass on Python 3.8.
 4.739         warnings.warn(msg)
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `requirements/dev.txt` pins an old version of `ipdb` whose `setup.py` declares `use_2to3 = True`. The `use_2to3` option (a Python 2→3 migration helper) was removed from `setuptools` in version 58.3.0. The modern setuptools shipped with Python 3.13 rejects it outright with `error in ipdb setup command: use_2to3 is invalid.`
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Upgrade `ipdb` to ≥0.13.9 in `requirements/dev.txt`, which dropped the `use_2to3` flag.
 
 ---
 
@@ -57,4 +57,4 @@ All 24 tests pass on Python 3.8.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | Old `ipdb` `setup.py` declares `use_2to3 = True` — removed from setuptools ≥58.3.0; Python 3.13 ships modern setuptools → build fails | Upgrade `ipdb` to ≥0.13.9 in `requirements/dev.txt` |

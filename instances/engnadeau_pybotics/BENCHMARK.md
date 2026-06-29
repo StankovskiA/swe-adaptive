@@ -22,7 +22,7 @@ All 36 tests pass on Python 3.10.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `python_requires = ">=3.9,<3.13"` explicitly excludes Python 3.13
 
 ```
 #9 5.044 ERROR: Package 'pybotics' requires a different Python: 3.13.14 not in '<3.13,>=3.9'
@@ -47,9 +47,9 @@ _Dockerfile_tmp_engnadeau_pybotics:5
    6 | >>>  && pip install --no-cache-dir -e . \
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `pyproject.toml` declares `requires-python = ">=3.9,<3.13"`, explicitly capping support at Python 3.12. pip enforces this constraint and refuses to install the package on Python 3.13.14.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Widen the constraint to `requires-python = ">=3.9"` in `pyproject.toml` and verify that any Python-version-specific code in the library works on 3.13.
 
 ---
 
@@ -57,4 +57,4 @@ _Dockerfile_tmp_engnadeau_pybotics:5
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `pyproject.toml` declares `requires-python = ">=3.9,<3.13"` — pip refuses to install on Python 3.13.14 | Widen to `requires-python = ">=3.9"` in `pyproject.toml` |

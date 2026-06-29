@@ -1,0 +1,55 @@
+FROM python:3.8-slim
+
+RUN apt-get update && apt-get install -y gcc git && rm -rf /var/lib/apt/lists/*
+
+COPY ./ /root/code
+WORKDIR /root/code
+
+RUN pip install --upgrade pip
+
+# Pre-install CPU-only torch and torchvision before the main install so pip
+# does not pull the GPU build. PEP 440: torch==X+cpu satisfies torch==X.
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Install the project with all test and optional extras.
+# torch/torchvision are pre-pinned above so pip keeps the cpu-only builds.
+RUN pip install -e ".[tests]"
+
+# Install remaining optional ML extras not covered by [tests]:
+#   - tensorflow + h5py (required by mlem.contrib.tensorflow at import time)
+#   - catboost
+#   - sagemaker SDK (required by mlem.contrib.sagemaker)
+#   - kubernetes python client (required by mlem.contrib.kubernetes)
+#   - streamlit + streamlit_pydantic (required by mlem.contrib.streamlit)
+#   - onnxruntime (required by mlem.contrib.onnx alongside onnx)
+RUN pip install \
+    tensorflow h5py \
+    catboost \
+    sagemaker \
+    kubernetes \
+    streamlit streamlit_pydantic \
+    "onnxruntime<1.14"
+
+# Fix breaking API changes in dependencies that were not pinned in setup.py:
+#
+# 1. isort 6+ removed isort.deprecated.finders, which mlem imports at startup.
+# 2. pytest 8+ removed CallSpec2.funcargs, needed by pytest-lazy-fixture==0.6.3.
+# 3. typer 0.9+ changed the internal get_group_from_info() signature.
+# 4. prometheus-fastapi-instrumentator 7+ uses list[X] type syntax (Python 3.9+).
+# 5. fsspec 2023.6+ added strict ** glob validation that rejects existing patterns.
+# 6. s3fs 2022.11+ changed .protocol from 's3' to ('s3','s3a'), breaking URI checks.
+#    s3fs<2022.11 uses aiobotocore which requires an older botocore, so we pin
+#    boto3/botocore to a consistent set that satisfies all three packages.
+RUN pip install \
+    "isort>=5.10,<6" \
+    "pytest<8" \
+    "typer>=0.6,<0.9" \
+    "prometheus-fastapi-instrumentator<7" \
+    "fsspec>=2021.7.0,<2023.6.0" \
+    "s3fs>=2021.11.1,<2022.11.0" \
+    "boto3>=1.24,<1.25" \
+    "botocore>=1.27,<1.28"
+
+CMD pytest tests/ --ignore=tests/contrib \
+    -m 'not long and not docker and not kubernetes and not conda' \
+    -q --tb=short --no-header

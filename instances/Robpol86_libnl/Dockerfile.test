@@ -1,9 +1,0 @@
-FROM python:3.5-slim
-WORKDIR /root/code
-RUN sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g; /stretch-updates/d' /etc/apt/sources.list \
- && apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
-COPY . .
-RUN pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir -e . \
- && pip install --no-cache-dir pytest pygments docopt
-CMD ["pytest", "tests/", "-v", "--continue-on-collection-errors", "--ignore=tests/nl/test_nl_connect.py", "--ignore=tests/nl/test_nl_recv.py", "--ignore=tests/nl/test_nl_recvmsgs_default.py", "-k", "not (test_nl_socket_modify_cb or test_list_interfaces)"]

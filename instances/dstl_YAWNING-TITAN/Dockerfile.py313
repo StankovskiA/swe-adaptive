@@ -1,0 +1,23 @@
+FROM python:3.13-slim
+
+COPY ./ /root/code
+RUN apt-get update && apt-get install gcc -y
+
+RUN pip install --upgrade pip
+
+RUN cd /root/code && pip install -e ".[dev]"
+
+RUN mkdir -p \
+    /root/yawning_titan/images \
+    /root/yawning_titan/videos \
+    /root/yawning_titan/notebooks \
+    /root/yawning_titan/game_modes \
+    /root/yawning_titan/agents/logs \
+    /root/.local/share/yawning_titan/app_images \
+    /root/.cache/yawning_titan/log
+
+RUN mkdir -p /root/.local/share/yawning_titan/db && \
+    cp /root/code/tests/_package_data/game_modes.json /root/.local/share/yawning_titan/db/ && \
+    cp /root/code/tests/_package_data/networks.json /root/.local/share/yawning_titan/db/
+
+CMD ["/bin/bash"]

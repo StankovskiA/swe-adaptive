@@ -47,9 +47,9 @@ All 12 tests pass on Python 3.10.
 #9 81.03           ~~~~~~~~~~~~~~^^
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** Old Pillow version fails to build on Python 3.13. The package's `setup.py` uses `exec()` to read `__version__` from a version file, but Python 3.13 changed how `exec()` populates `locals()`, causing `KeyError: '__version__'` during the wheel build step.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Pin `Pillow` to ≥10.0.0, which ships pre-built Python 3.13 wheels and uses a modern build backend.
 
 ---
 
@@ -57,4 +57,4 @@ All 12 tests pass on Python 3.10.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | Old Pillow `setup.py` uses `exec()` to read `__version__`; Python 3.13 changed `exec()` locals handling → `KeyError: '__version__'` | Upgrade Pillow to ≥10.0.0 |

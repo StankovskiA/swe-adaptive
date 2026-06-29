@@ -1,0 +1,16 @@
+FROM python:3.13-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget unzip curl git gcc g++ make \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /root/code
+COPY . .
+
+# Restore original imports (revert benchmark-collection path modifications)
+RUN git checkout HEAD -- panini/ tests/ examples/
+
+# Plain install with pinned dependencies — expected to fail on Python 3.13
+RUN pip install --upgrade pip && \
+    pip install -r requirements/defaults.txt && \
+    pip install -e .

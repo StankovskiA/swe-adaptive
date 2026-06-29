@@ -22,7 +22,7 @@ All 4 tests pass on Python 3.9.
 **Python version:** 3.13
 **Result:** Build/test fails
 
-### Error — unknown
+### Error — `PyFrameObject` opaque since Python 3.11+
 
 ```
 #9 4.913   error: subprocess-exited-with-error
@@ -47,9 +47,9 @@ All 4 tests pass on Python 3.9.
 #9 4.913       !!
 ```
 
-**Root cause:** Requires manual investigation.
+**Root cause:** `awaitwhat/what.c` directly accesses `PyFrameObject` struct fields. Python 3.11 made `PyFrameObject` an opaque type (`struct _frame` is now incomplete), so any code that dereferences frame pointers fails to compile. Since `awaitwhat` is an async frame inspector, it naturally relies on frame internals.
 
-**Minimal fix:** Investigate the error above.
+**Minimal fix:** Replace direct `PyFrameObject` field accesses with the public stable API: `PyFrame_GetLocals()`, `PyFrame_GetCode()`, `PyFrame_GetBack()`, etc.
 
 ---
 
@@ -57,4 +57,4 @@ All 4 tests pass on Python 3.9.
 
 | # | Error | Minimal fix |
 |---|-------|-------------|
-| ? | Unknown error — see raw output above | Investigate manually |
+| 1 | `what.c` dereferences `PyFrameObject*` — opaque since Python 3.11 (`invalid use of incomplete typedef 'PyFrameObject'`) | Use public frame API (`PyFrame_GetLocals()`, `PyFrame_GetCode()`, etc.) |

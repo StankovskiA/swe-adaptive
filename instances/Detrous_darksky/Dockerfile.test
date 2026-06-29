@@ -4,5 +4,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY . .
 RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir -e . \
- && pip install --no-cache-dir pytest aioresponses mock
+ && pip install --no-cache-dir pytest "aioresponses==0.6.0" mock
 CMD ["pytest", "tests/", "-v"]

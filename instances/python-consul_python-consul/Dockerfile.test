@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+WORKDIR /root/code
+COPY . .
+# README.rst and CHANGELOG.rst are missing from repo (only README.md exists),
+# but setup.py reads them — create stubs so the editable install succeeds.
+# setuptools<66 is needed because the package uses the legacy setup.py interface;
+# --no-build-isolation exposes the pinned setuptools to the build backend.
+RUN touch README.rst CHANGELOG.rst \
+ && pip install --no-cache-dir --upgrade pip "setuptools<66" \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir --no-build-isolation . \
+ && pip install --no-cache-dir pytest six
+CMD ["pytest", "tests/test_base.py", "-v"]
