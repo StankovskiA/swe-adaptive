@@ -1,0 +1,32 @@
+FROM python:3.13-slim
+
+# Install system dependencies needed for building Python C extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install NATS server
+RUN curl -sL "https://github.com/nats-io/nats-server/releases/download/v2.14.2/nats-server-v2.14.2-linux-amd64.tar.gz" \
+    -o /tmp/nats-server.tar.gz \
+    && tar -xzf /tmp/nats-server.tar.gz -C /tmp \
+    && cp /tmp/nats-server-v2.14.2-linux-amd64/nats-server /usr/local/bin/ \
+    && rm -rf /tmp/nats-server*
+
+WORKDIR /app
+
+# Copy project files
+COPY . /app
+
+# Pin setuptools to a version where pkg_resources is still available (needed by pynats)
+RUN pip install --no-cache-dir --upgrade pip wheel \
+    && pip install --no-cache-dir 'setuptools>=70.0.0,<82'
+
+# Install the project with all dependencies
+RUN pip install --no-cache-dir -r requirements/defaults.txt \
+    && pip install --no-cache-dir -e .
+
+# Start NATS server in background and run tests
+RUN nats-server -p 4222 -m 8222 & sleep 2 && python -m pytest tests/ -v
+

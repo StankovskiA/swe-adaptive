@@ -1,0 +1,27 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..d7b5304
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,8 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++COPY . /app
++
++RUN pip install --no-cache-dir mock pytest pytest-mock pytest-cov six telnetlib3
++RUN pip install --no-cache-dir -e .
++RUN python -m pytest test/ -v
+diff --git a/setup.py b/setup.py
+index 1d91573..f8d83f7 100644
+--- a/setup.py
++++ b/setup.py
+@@ -38,7 +38,7 @@ def read(*names, **kwargs):
+ 
+ Version = "0.16.0"
+ 
+-install_requires = ["six"]
++install_requires = ["six", "telnetlib3"]
+ 
+ setup(name="epdb",
+       version=Version,

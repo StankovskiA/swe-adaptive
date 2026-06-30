@@ -1,0 +1,34 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..c1ba4d4
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,10 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY requirements.txt test-requirements.txt ./
++RUN pip install --no-cache-dir -r requirements.txt -r test-requirements.txt
++
++COPY . /app
++
++RUN python -m pytest tests/ -v
+diff --git a/requirements.txt b/requirements.txt
+index 75802c4..d99e3de 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,6 +1,6 @@
+-requests==2.27.1
+-flask==2.1.1
+-iso3166==2.0.2
+-gunicorn==20.1.0
+-boto3==1.21.44
+-pynetbox==6.6.2
+\ No newline at end of file
++requests>=2.27.1
++flask>=2.3.0
++iso3166>=2.0.2
++gunicorn>=20.1.0
++boto3>=1.26.0
++pynetbox>=7.0.0

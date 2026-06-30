@@ -1,0 +1,23 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install --no-cache-dir \
+    "django>=4.2,<5.0" \
+    "pyyaml>=6.0.1" \
+    djangorestframework \
+    inflection \
+    "openapi-spec-validator>=0.4" \
+    prance \
+    drf-yasg \
+    drf-spectacular \
+    pytest \
+    pytest-django \
+    coverage \
+    faker
+
+RUN pip install --no-cache-dir .
+
+RUN python -m pytest tests/ -q

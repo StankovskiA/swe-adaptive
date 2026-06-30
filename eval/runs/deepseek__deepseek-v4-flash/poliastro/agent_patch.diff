@@ -1,0 +1,70 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 00000000..ebe75cee
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,12 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Upgrade pip
++RUN pip install --upgrade pip
++
++# Copy the project files
++COPY . /app
++
++# Install with more verbose output and check what's slow
++RUN pip install -e ".[test]" --verbose 2>&1 | tail -30
+diff --git a/pyproject.toml b/pyproject.toml
+index bad880e7..f5a8847f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -46,7 +46,7 @@ classifiers = [
+     "Topic :: Scientific/Engineering :: Astronomy",
+ ]
+ dependencies = [
+-    "astropy >=5.0,<6",
++    "astropy >=6.0",
+     "astroquery >=0.3.9",
+     "jplephem",
+     "matplotlib >=2.0,!=3.0.1",
+diff --git a/src/poliastro/frames/ecliptic.py b/src/poliastro/frames/ecliptic.py
+index 0f5f9582..67974232 100644
+--- a/src/poliastro/frames/ecliptic.py
++++ b/src/poliastro/frames/ecliptic.py
+@@ -12,7 +12,6 @@ from astropy.coordinates import (
+ )
+ from astropy.coordinates.builtin_frames.utils import DEFAULT_OBSTIME, get_jd12
+ from astropy.coordinates.matrix_utilities import (
+-    matrix_product,
+     matrix_transpose,
+     rotation_matrix,
+ )
+@@ -73,7 +72,7 @@ def gcrs_to_geosolarecliptic(gcrs_coo, to_frame):
+ 
+     rot_matrix = _make_rotation_matrix_from_reprs(sun_earth_detilt, x_axis)
+ 
+-    return matrix_product(rot_matrix, _earth_detilt_matrix)
++    return rot_matrix @ _earth_detilt_matrix
+ 
+ 
+ @frame_transform_graph.transform(
+diff --git a/src/poliastro/plotting/orbit/backends/matplotlib.py b/src/poliastro/plotting/orbit/backends/matplotlib.py
+index 67e090f5..563bc6eb 100644
+--- a/src/poliastro/plotting/orbit/backends/matplotlib.py
++++ b/src/poliastro/plotting/orbit/backends/matplotlib.py
+@@ -69,8 +69,11 @@ class Matplotlib2D(OrbitPlotterBackend):
+ 
+         """
+         if color is None:
+-            # HACK: https://stackoverflow.com/a/13831816/554319
+-            color = next(self.ax._get_lines.prop_cycler)["color"]
++            # Try to get the next color from the cycle in a version-compatible way
++            try:
++                color = self.ax._get_lines.get_next_color()
++            except AttributeError:
++                color = next(self.ax._get_lines.prop_cycler)["color"]
+ 
+         colors = [color, to_rgba(color, 0)] if trail else [color]
+         return colors

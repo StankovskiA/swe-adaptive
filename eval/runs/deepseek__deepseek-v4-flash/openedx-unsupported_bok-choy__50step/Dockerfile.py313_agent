@@ -1,0 +1,38 @@
+FROM python:3.13-slim
+
+# Install system dependencies for Firefox and geckodriver
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        firefox-esr \
+        wget \
+        ca-certificates \
+        && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install geckodriver
+ARG GECKODRIVER_VERSION=v0.35.0
+RUN wget -q https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz && \
+    tar -xzf geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz -C /usr/local/bin/ && \
+    rm geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz && \
+    chmod +x /usr/local/bin/geckodriver
+
+WORKDIR /app
+COPY . /app
+
+# Install project dependencies and the project itself
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements/test.txt && \
+    pip install --no-cache-dir -e .
+
+# Set environment variables for headless Firefox testing
+ENV BOKCHOY_HEADLESS=true
+ENV SELENIUM_BROWSER=firefox
+ENV SCREENSHOT_DIR=/app/logs
+ENV SELENIUM_DRIVER_LOG_DIR=/app/logs
+ENV SERVER_PORT=8020
+
+# Create required directories
+RUN mkdir -p /app/logs
+
+# Run the full test suite
+RUN python -m pytest tests/ -v --cov=bok_choy --cov-report=term-missing -x

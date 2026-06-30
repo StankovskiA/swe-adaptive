@@ -1,0 +1,30 @@
+{
+  "timestamp_start": "2026-06-13T18:00:11.495453+00:00",
+  "hostname": "-pc",
+  "platform": "Linux-6.17.0-35-generic-x86_64-with-glibc2.39",
+  "python_version": "3.13.1 (main, Jan  2 2026, 16:48:37) [GCC 13.3.0]",
+  "mini_swe_agent_version": "",
+  "model": "deepseek/deepseek-v4-pro",
+  "instance_id": "MantisAI_hugie",
+  "git_commit_repo": "41d36c93c8b9ea74a1b93883fefd5812e7535bca",
+  "docker_version": "29.5.3",
+  "pyenv_versions": [
+    "3.8.20",
+    "3.9.21",
+    "3.9.21/envs/new",
+    "3.10.14",
+    "3.12.8",
+    "3.12.8/envs/newenv",
+    "3.13.1",
+    "new",
+    "newenv"
+  ],
+  "env_vars_present": [
+    "GEMINI_API_KEY",
+    "SWE_ADAPTIVE_GEMINI_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "GROQ_API_KEY"
+  ],
+  "agent_command": "/home//.pyenv/versions/3.13.1/bin/mini",
+  "timeout_seconds": 2700
+}

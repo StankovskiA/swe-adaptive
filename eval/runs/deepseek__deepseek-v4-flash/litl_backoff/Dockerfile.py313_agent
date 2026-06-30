@@ -1,0 +1,15 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Copy project files
+COPY . /app
+
+# Install the package and test dependencies
+RUN pip install --no-cache-dir -e . pytest pytest-asyncio pytest-cov requests responses types-requests
+
+# Run tests
+RUN python -m pytest tests/ -v

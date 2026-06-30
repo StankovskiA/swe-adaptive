@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Evaluation run artifacts (logs, large files)
+eval/runs/**/*.log
+eval/runs/**/combined.log
+eval/runs/**/stdout.log
+eval/runs/**/stderr.log
+
+# Temporary / build
+*.tmp
+.DS_Store

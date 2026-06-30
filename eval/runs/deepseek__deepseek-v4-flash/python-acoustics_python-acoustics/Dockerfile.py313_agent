@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install build dependencies, test dependencies, and the project
+RUN pip install --no-cache-dir flit_core pytest && \
+    pip install --no-cache-dir -e .
+
+# Run the test suite
+RUN python -m pytest tests/ -q

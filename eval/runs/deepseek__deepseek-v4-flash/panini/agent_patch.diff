@@ -1,0 +1,111 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..fe82caa
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,32 @@
++FROM python:3.13-slim
++
++# Install system dependencies needed for building Python C extensions
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    build-essential \
++    curl \
++    ca-certificates \
++    && rm -rf /var/lib/apt/lists/*
++
++# Install NATS server
++RUN curl -sL "https://github.com/nats-io/nats-server/releases/download/v2.14.2/nats-server-v2.14.2-linux-amd64.tar.gz" \
++    -o /tmp/nats-server.tar.gz \
++    && tar -xzf /tmp/nats-server.tar.gz -C /tmp \
++    && cp /tmp/nats-server-v2.14.2-linux-amd64/nats-server /usr/local/bin/ \
++    && rm -rf /tmp/nats-server*
++
++WORKDIR /app
++
++# Copy project files
++COPY . /app
++
++# Pin setuptools to a version where pkg_resources is still available (needed by pynats)
++RUN pip install --no-cache-dir --upgrade pip wheel \
++    && pip install --no-cache-dir 'setuptools>=70.0.0,<82'
++
++# Install the project with all dependencies
++RUN pip install --no-cache-dir -r requirements/defaults.txt \
++    && pip install --no-cache-dir -e .
++
++# Start NATS server in background and run tests
++RUN nats-server -p 4222 -m 8222 & sleep 2 && python -m pytest tests/ -v
++
+diff --git a/requirements/defaults.txt b/requirements/defaults.txt
+index 5b2c875..a35eb06 100644
+--- a/requirements/defaults.txt
++++ b/requirements/defaults.txt
+@@ -1,7 +1,9 @@
+-aiohttp==3.8.1
++aiohttp>=3.9.0
+ aiohttp-cors==0.7.0
+ async-timeout==4.0.0
++packaging>=20.0
+ requests==2.31.0
++setuptools>=70.0.0,<82
+ six==1.16.0
+ nats-py==2.6.0
+ nats-python==0.8.0
+@@ -11,6 +13,6 @@ pytest-asyncio==0.17.2
+ pydantic==1.10.2
+ prometheus-client==0.9.0
+ python-json-logger==2.0.1
+-yarl==1.7.2
++yarl>=1.9.0
+ ujson==5.4.0
+ websocket-client==1.2.3
+diff --git a/setup.py b/setup.py
+index e965f14..83e8f4f 100644
+--- a/setup.py
++++ b/setup.py
+@@ -33,16 +33,18 @@ setup(
+     url="https://github.com/lwinterface/panini",
+     author="Op Return SA, developers: Andrii Volotskov, Danylo Tiutiushkin",
+     author_email="example@example.com",
+-    python_requires=">=3.8.3",
++    python_requires=">=3.9",
+     license="MIT",
+     classifiers=[
+         "Development Status :: 3 - Alpha",
+         "Intended Audience :: Developers",
+         "License :: OSI Approved :: MIT License",
+         "Programming Language :: Python :: 3",
+-        "Programming Language :: Python :: 3.8",
+         "Programming Language :: Python :: 3.9",
+         "Programming Language :: Python :: 3.10",
++        "Programming Language :: Python :: 3.11",
++        "Programming Language :: Python :: 3.12",
++        "Programming Language :: Python :: 3.13",
+         "Programming Language :: Python :: 3 :: Only",
+         "Operating System :: POSIX :: Linux",
+         "Operating System :: MacOS :: MacOS X",
+@@ -57,12 +59,14 @@ setup(
+         "panini.managers",
+     ],
+     install_requires=[
++        "aiohttp>=3.9.0",
+         "async-timeout==4.0.0",
+         "nats-py==2.6.0",
++        "packaging>=20.0",
+         "websocket-client>=1.2.3",
+         "requests>=2.31.0",
+         "six>=1.15.0",
+-        "yarl>=1.6.1",
++        "yarl>=1.9.0",
+         "python-json-logger>=2.0.1",
+         "nest-asyncio==1.5.1",
+         "prometheus-client==0.9.0",
+@@ -83,7 +87,7 @@ setup(
+         "Source": "https://github.com/lwinterface/panini/",
+     },
+     zip_safe=False,
+-    extras_required={
++    extras_require={
+         'tracing': tracing_dependencies
+     }
+ )

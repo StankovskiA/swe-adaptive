@@ -1,0 +1,20 @@
+{
+  "instance_id": "fcakyon_pywhisper",
+  "model": "deepseek/deepseek-v4-pro",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/fcakyon_pywhisper/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/fcakyon_pywhisper/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 55,
+  "patch_lines_removed": 13,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "pywhisper/tokenizer.py",
+    "setup.py"
+  ],
+  "error": null,
+  "scored_at": "2026-06-13T10:56:40.618417+00:00"
+}

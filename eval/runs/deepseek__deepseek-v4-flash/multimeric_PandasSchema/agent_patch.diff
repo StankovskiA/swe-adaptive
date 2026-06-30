@@ -1,0 +1,60 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..4cbbb47
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,11 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++RUN pip install --upgrade pip setuptools wheel && \
++    pip install -e . && \
++    pip install pytest
++
++RUN python -m pytest test/ -q
+diff --git a/pandas_schema/schema.py b/pandas_schema/schema.py
+index 0648d6c..9466d6c 100644
+--- a/pandas_schema/schema.py
++++ b/pandas_schema/schema.py
+@@ -64,7 +64,7 @@ class Schema:
+         # We associate the column objects in the schema with data frame series either by name or by position, depending
+         # on the value of self.ordered
+         if self.ordered:
+-            series = [x[1] for x in df.iteritems()]
++            series = [x[1] for x in df.items()]
+             column_pairs = zip(series, self.columns)
+         else:
+             column_pairs = []
+diff --git a/pandas_schema/validation.py b/pandas_schema/validation.py
+index 5f7c763..c7c6d1c 100644
+--- a/pandas_schema/validation.py
++++ b/pandas_schema/validation.py
+@@ -227,7 +227,11 @@ class IsDtypeValidation(_BaseValidation):
+         super().__init__(**kwargs)
+ 
+     def get_errors(self, series: pd.Series, column: 'column.Column' = None):
+-        if not np.issubdtype(series.dtype, self.dtype):
++        try:
++            is_subtype = np.issubdtype(series.dtype, self.dtype)
++        except TypeError:
++            is_subtype = False
++        if not is_subtype:
+             return [ValidationWarning(
+                 'The column {} has a dtype of {} which is not a subclass of the required type {}'.format(
+                     column.name if column else '', series.dtype, self.dtype
+diff --git a/test/test_validation.py b/test/test_validation.py
+index fc40100..ddd1633 100644
+--- a/test/test_validation.py
++++ b/test/test_validation.py
+@@ -536,7 +536,7 @@ class Dtype(ValidationTestBase):
+         self.assertEqual(
+             sorted([str(x) for x in errors]),
+             sorted([
+-                'The column wrong_dtype1 has a dtype of object which is not a subclass of the required type int64',
++                'The column wrong_dtype1 has a dtype of str which is not a subclass of the required type int64',
+                 'The column wrong_dtype2 has a dtype of int64 which is not a subclass of the required type float64',
+                 'The column wrong_dtype3 has a dtype of float64 which is not a subclass of the required type int64'
+             ])

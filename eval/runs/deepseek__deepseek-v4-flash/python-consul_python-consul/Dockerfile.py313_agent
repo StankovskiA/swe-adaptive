@@ -1,0 +1,18 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build dependencies
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Copy project files
+COPY . /app
+
+# Ensure consul binary is executable
+RUN chmod +x tests/consul.linux64
+
+# Install the project with all optional dependencies
+RUN pip install --no-cache-dir -e ".[tornado,asyncio,twisted]" pytest pytest-twisted
+
+# Run the full test suite
+RUN python -m pytest tests/ -v

@@ -1,0 +1,20 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install build dependencies (needed for some packages that may need compilation)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc && \
+    rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip, setuptools and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Install the project and all dependencies
+RUN pip install -e . && \
+    pip install -r requirements.txt
+
+# Run the full test suite
+RUN python -m pytest tests/ -q

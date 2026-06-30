@@ -1,0 +1,17 @@
+{
+  "instance_id": "openedx-unsupported_bok-choy",
+  "model": "deepseek/deepseek-v4-flash",
+  "resolved": false,
+  "scoring_error": false,
+  "skipped": true,
+  "skip_reason": "mini-swe-agent aborted (non-interactive setup)",
+  "dockerfile_generated": false,
+  "agent_dockerfile_path": null,
+  "docker_exit_code": null,
+  "patch_empty": true,
+  "patch_lines_added": 0,
+  "patch_lines_removed": 0,
+  "patch_files_changed": [],
+  "error": "mini-swe-agent aborted (non-interactive setup)",
+  "scored_at": "2026-06-14T14:10:17.936542+00:00"
+}

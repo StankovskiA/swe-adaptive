@@ -1,0 +1,21 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip, setuptools, wheel
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+COPY . /app
+
+# Install dependencies and project
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -e .
+
+# Run test suite
+RUN nose2

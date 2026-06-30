@@ -1,0 +1,23 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Install pip and setuptools
+RUN pip install --no-cache-dir -U pip setuptools wheel
+
+# Install the project and test dependencies
+RUN pip install --no-cache-dir \
+    pytest \
+    pytest-mock \
+    pytest-clarity \
+    -e .
+
+# Run the full test suite
+RUN python -m pytest tests/ -q

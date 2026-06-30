@@ -1,0 +1,122 @@
+diff --git a/aioxmpp/i18n.py b/aioxmpp/i18n.py
+index c60ef33..84d4dd0 100644
+--- a/aioxmpp/i18n.py
++++ b/aioxmpp/i18n.py
+@@ -116,7 +116,7 @@ class LocalizingFormatter(string.Formatter):
+ 
+         if isinstance(value, datetime):
+             if value.tzinfo is not None:
+-                value = tzinfo.normalize(value)
++                value = value.astimezone(tzinfo)
+             if format_spec:
+                 return babel.dates.format_datetime(value,
+                                                    locale=locale,
+@@ -169,9 +169,9 @@ class LocalizingFormatter(string.Formatter):
+             tzinfo = self.tzinfo
+ 
+         if isinstance(value, datetime):
+-            return babel.dates.format_datetime(
+-                tzinfo.normalize(value),
+-                locale=locale)
++            if value.tzinfo is not None:
++                value = value.astimezone(tzinfo)
++            return babel.dates.format_datetime(value, locale=locale)
+         elif isinstance(value, timedelta):
+             return babel.dates.format_timedelta(value, locale=locale)
+         elif isinstance(value, date):
+diff --git a/setup.py b/setup.py
+index 995d743..5760e9f 100644
+--- a/setup.py
++++ b/setup.py
+@@ -34,7 +34,7 @@ with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+ 
+ version_mod = runpy.run_path("aioxmpp/_version.py")
+ 
+-lxml_constraint = "lxml~=4.0"
++lxml_constraint = "lxml>=4.0"
+ if sys.version_info < (3, 5):
+     lxml_constraint += ",<4.4"
+ 
+diff --git a/tests/bookmarks/test_service.py b/tests/bookmarks/test_service.py
+index 07703d4..1b0415f 100644
+--- a/tests/bookmarks/test_service.py
++++ b/tests/bookmarks/test_service.py
+@@ -243,7 +243,7 @@ class TestBookmarkClient(unittest.TestCase):
+                 new=CoroutineMock()) as set_private_xml_mock:
+             with self.assertRaisesRegex(
+                     TypeError,
+-                    "can only assign an iterable$"):
++                    "(can only assign an iterable|must assign iterable to extended slice)"):
+                 run_coroutine(self.s._set_bookmarks(bookmarks))
+ 
+         self.assertEqual(
+diff --git a/tests/forms/test_fields.py b/tests/forms/test_fields.py
+index 2de95ab..0feaeb5 100644
+--- a/tests/forms/test_fields.py
++++ b/tests/forms/test_fields.py
+@@ -70,7 +70,7 @@ class TestBoundField(unittest.TestCase):
+         del self.instance
+ 
+     def test_is_abstract(self):
+-        with self.assertRaisesRegex(TypeError, r"abstract.* load, render"):
++        with self.assertRaisesRegex(TypeError, r"(abstract.*load.*render|Can't instantiate.*abstract methods .load., .render.)"):
+             fields.BoundField(unittest.mock.sentinel.foo,
+                               unittest.mock.sentinel.bar)
+ 
+@@ -1860,7 +1860,7 @@ class TestAbstractChoiceField(unittest.TestCase):
+     def test_is_abstract(self):
+         with self.assertRaisesRegex(
+                 TypeError,
+-                r"abstract.* create_bound, default"):
++                r"(abstract.*create_bound.*default|Can't instantiate.*abstract methods .create_bound., .default.)"):
+             fields.AbstractChoiceField()
+ 
+     def test_init_options_with_coerce(self):
+diff --git a/tests/test_service.py b/tests/test_service.py
+index 2831b13..5ba51c3 100644
+--- a/tests/test_service.py
++++ b/tests/test_service.py
+@@ -2980,7 +2980,7 @@ class TestDescriptor(unittest.TestCase):
+         del self.d
+ 
+     def test_is_abstract_class(self):
+-        with self.assertRaisesRegex(TypeError, "abstract methods init_cm"):
++        with self.assertRaisesRegex(TypeError, "(abstract methods init_cm|Can't instantiate.*abstract methods .init_cm.)"):
+             service.Descriptor()
+ 
+     def test_add_to_stack_uses_init_cm_to_obtain_cm_and_pushes(self):
+diff --git a/tests/test_utils.py b/tests/test_utils.py
+index 05ddb2a..7ff33e3 100644
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -765,7 +765,7 @@ class Testproxy_property(unittest.TestCase):
+ 
+         with self.assertRaisesRegex(
+                 AttributeError,
+-                r"(can't delete attribute|property of .* has no deleter)"
++                r"(can't delete attribute|property of .* has no deleter|property '.*' of '.*' object has no deleter)"
+         ):
+             self.pp.__delete__(self.obj)
+ 
+@@ -778,7 +778,7 @@ class Testproxy_property(unittest.TestCase):
+ 
+         with self.assertRaisesRegex(
+                 AttributeError,
+-                r"(can't set attribute|property of .* has no setter)"
++                r"(can't set attribute|property of .* has no setter|property '.*' of '.*' object has no setter)"
+         ):
+             pp.__set__(self.obj, unittest.mock.sentinel.value)
+ 
+diff --git a/tests/xso/test_model.py b/tests/xso/test_model.py
+index 4d957df..d9fc40b 100644
+--- a/tests/xso/test_model.py
++++ b/tests/xso/test_model.py
+@@ -2294,7 +2294,7 @@ class TestCapturingXSO(unittest.TestCase):
+     def test_is_abstract(self):
+         with self.assertRaisesRegex(
+                 TypeError,
+-                r"abstract methods? _set_captured_events"):
++                r"(abstract methods? _set_captured_events|Can't instantiate.*abstract method ._set_captured_events.)"):
+             xso_model.CapturingXSO()
+ 
+ 

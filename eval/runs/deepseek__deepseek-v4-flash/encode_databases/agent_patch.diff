@@ -1,0 +1,43 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..4cebe01
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,19 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Install system build dependencies needed for some packages
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    gcc \
++    libc6-dev \
++    && rm -rf /var/lib/apt/lists/*
++
++# Copy project files
++COPY . /app
++
++# Install the project and all dependencies (using requirements.txt which has been updated for Python 3.13)
++RUN pip install --no-cache-dir -r requirements.txt
++
++# Run the full test suite (using SQLite as the test database)
++ENV TEST_DATABASE_URLS="sqlite:///test.db"
++RUN python -m pytest tests/ -v
+diff --git a/requirements.txt b/requirements.txt
+index 8b05a46..afc1b0f 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,11 +1,11 @@
+ -e .
+ 
+ # Async database drivers
+-asyncmy==0.2.9
++asyncmy>=0.2.11
+ aiomysql==0.2.0
+ aiopg==1.4.0
+ aiosqlite==0.20.0
+-asyncpg==0.29.0
++asyncpg>=0.30.0
+ 
+ # Sync database drivers for standard tooling around setup/teardown/migrations.
+ psycopg==3.1.18

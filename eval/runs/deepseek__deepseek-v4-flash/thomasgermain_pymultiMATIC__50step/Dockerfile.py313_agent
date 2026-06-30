@@ -1,0 +1,24 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build dependencies (gcc, etc.) for compiling C extensions if needed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install project dependencies and the project itself
+RUN pip install -r requirements.txt
+RUN pip install -e .
+
+# Debug: print installed packages
+RUN pip list
+
+# Run the test suite
+RUN python -m pytest tests/ -q

@@ -1,0 +1,121 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..7eeeac1
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,24 @@
++FROM python:3.13-slim
++
++# Install system dependencies needed for compiling python packages with C extensions
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    build-essential \
++    && rm -rf /var/lib/apt/lists/*
++
++WORKDIR /app
++
++# Copy setup and requirements files first to leverage Docker's build cache
++COPY requirements.txt requirements-dev.txt pyproject.toml setup.py setup.cfg README.md LICENSE /app/
++
++# Upgrade build tools and install the package dependencies
++RUN pip install --no-cache-dir --upgrade pip setuptools wheel
++RUN pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
++
++# Copy the rest of the application files
++COPY . /app
++
++# Install the application itself in editable mode
++RUN pip install --no-cache-dir -e .
++
++# Run the test suite so that any test failures cause the docker build to fail
++RUN python -m pytest
+diff --git a/handprint/comparison.py b/handprint/comparison.py
+index 140080c..e7cdd62 100644
+--- a/handprint/comparison.py
++++ b/handprint/comparison.py
+@@ -179,7 +179,7 @@ def line_data(gt_line, htr_line, htr_index):
+     # The stringdist package definition of levenshtein_norm() divides
+     # by the longest of the two strings, but it is more conventional in
+     # OCR papers and software to divide by the length of the reference.
+-    from stringdist import levenshtein
++    from textdistance import levenshtein
+     distance = levenshtein(expected, obtained)
+     if len(expected) > 0:
+         cer = '{:.2f}'.format(100 * float(distance)/len(expected))
+diff --git a/requirements-dev.txt b/requirements-dev.txt
+index 9120cd2..8ee7b7d 100644
+--- a/requirements-dev.txt
++++ b/requirements-dev.txt
+@@ -8,4 +8,4 @@
+ 
+ -r requirements.txt
+ 
+-pytest-mock == 3.7.0
++pytest-mock >= 3.7.0
+diff --git a/requirements.txt b/requirements.txt
+index b9d48db..b5f3d57 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -6,35 +6,34 @@
+ # @website https://github.com/caltechlibrary/handprint
+ # =============================================================================
+ 
+-aenum                    == 3.1.0
+-appdirs                  == 1.4.4
+-boltons                  == 21.0.0
+-boto3                    == 1.17.91
+-bun                      == 0.0.8
++aenum                    >= 3.1.0
++appdirs                  >= 1.4.4
++boltons                  >= 21.0.0
++boto3                    >= 1.17.91
++bun                      >= 0.0.8
+ commonpy                 >= 1.9.1
+-fastnumbers              == 3.1.0
+-google-api-core          == 1.30.0
+-google-api-python-client == 2.8.0
+-google-auth              == 1.30.2
+-google-auth-httplib2     == 0.1.0
+-google-cloud             == 0.34.0
+-google-cloud-vision      == 2.3.1
+-googleapis-common-protos == 1.53.0
+-grpcio                   == 1.44.0
++fastnumbers              >= 3.1.0
++google-api-core          >= 1.30.0
++google-api-python-client >= 2.8.0
++google-auth              >= 1.30.2
++google-auth-httplib2     >= 0.1.0
++google-cloud             >= 0.34.0
++google-cloud-vision      >= 2.3.1
++googleapis-common-protos >= 1.53.0
++grpcio                   >= 1.44.0
+ humanize                 >= 3.7.1
+-imagesize                == 1.2.0
+-matplotlib               == 3.4.2
+-numpy                    == 1.22.2
+-Pillow                   == 9.0.1
+-plac                     == 1.3.4
+-psutil                   == 5.8.0
+-PyMuPDF                  == 1.19.6
+-requests                 == 2.25.0
+-rich                     == 12.0.1
++imagesize                >= 1.2.0
++matplotlib               >= 3.4.2
++numpy                    >= 1.22.2
++Pillow                   >= 9.0.1
++plac                     >= 1.3.4
++psutil                   >= 5.8.0
++PyMuPDF                  >= 1.19.6
++requests                 >= 2.25.0
++rich                     >= 12.0.1
+ setuptools               >= 62.1.0
+-sidetrack                == 2.0.0
+-StringDist               == 1.0.9
+-textdistance             == 4.2.2
+-urllib3                  == 1.26.5
+-validator-collection     == 1.5.0
+-wheel                    == 0.36.2
++sidetrack                >= 2.0.0
++textdistance             >= 4.2.2
++urllib3                  >= 1.26.5
++validator-collection     >= 1.5.0
++wheel                    >= 0.36.2

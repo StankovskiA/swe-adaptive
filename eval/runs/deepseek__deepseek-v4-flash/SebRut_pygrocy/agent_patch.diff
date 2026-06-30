@@ -1,0 +1,33 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..47fd9c4
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,14 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Copy project files
++COPY . /app
++
++# Install the project and all dependencies
++RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
++    pip install --no-cache-dir -e . && \
++    pip install --no-cache-dir responses~=0.21.0 pytest pytest-recording pytest-mock vcrpy
++
++# Run the full test suite
++RUN python -m pytest test/ -q
+diff --git a/pygrocy/grocy_api_client.py b/pygrocy/grocy_api_client.py
+index 2bb7098..81cba69 100644
+--- a/pygrocy/grocy_api_client.py
++++ b/pygrocy/grocy_api_client.py
+@@ -798,7 +798,7 @@ class GrocyApiClient(object):
+         self, query_filters: List[str] = None
+     ) -> List[MealPlanSectionResponse]:
+         parsed_json = self.get_generic_objects_for_type(
+-            EntityType.MEAL_PLAN_SECTIONS, query_filters
++            EntityType.MEAL_PLAN_SECTIONS.value, query_filters
+         )
+         if parsed_json:
+             return [MealPlanSectionResponse(**resp) for resp in parsed_json]

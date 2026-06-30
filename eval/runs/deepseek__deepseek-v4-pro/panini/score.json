@@ -1,0 +1,20 @@
+{
+  "instance_id": "panini",
+  "model": "deepseek/deepseek-v4-pro",
+  "resolved": false,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/panini/Dockerfile.py313_agent",
+  "docker_exit_code": 1,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/panini/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 29,
+  "patch_lines_removed": 3,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "requirements/defaults.txt",
+    "setup.py"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T15:26:31.955089+00:00"
+}

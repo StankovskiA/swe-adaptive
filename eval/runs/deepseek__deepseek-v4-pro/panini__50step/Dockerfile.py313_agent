@@ -1,0 +1,24 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+COPY . /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install NATS server
+RUN curl -L https://github.com/nats-io/nats-server/releases/download/v2.10.22/nats-server-v2.10.22-linux-amd64.tar.gz -o /tmp/nats-server.tar.gz \
+    && tar -xzf /tmp/nats-server.tar.gz -C /usr/local/bin nats-server-v2.10.22-linux-amd64/nats-server --strip-components=1 \
+    && rm /tmp/nats-server.tar.gz
+
+# Install project dependencies
+RUN pip install --no-cache-dir -r requirements/defaults.txt
+RUN pip install --no-cache-dir -e .
+
+# Start NATS server in background and run tests
+RUN nats-server -p 4222 -m 8222 & \
+    sleep 2 && \
+    python -m pytest tests/ -v -q
+

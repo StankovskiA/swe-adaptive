@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Copy repository contents
+COPY . /app
+
+# Upgrade pip and install the projects and all their dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -e . && \
+    pip install --no-cache-dir -e ./server
+
+# Run the full test suite using RUN (not CMD)
+RUN python tests/main.py

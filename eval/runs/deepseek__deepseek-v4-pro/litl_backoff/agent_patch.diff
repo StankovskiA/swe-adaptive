@@ -1,0 +1,104 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..cb2a374
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,5 @@
++FROM python:3.13-slim
++WORKDIR /app
++COPY . /app
++RUN pip install --no-cache-dir poetry && poetry install --no-interaction --no-ansi
++RUN poetry run python -m pytest tests/ -q
+diff --git a/pyproject.toml b/pyproject.toml
+index e0a6180..d81b7cc 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -19,6 +19,9 @@ classifiers = ['Development Status :: 5 - Production/Stable',
+                'Programming Language :: Python :: 3.8',
+                'Programming Language :: Python :: 3.9',
+                'Programming Language :: Python :: 3.10',
++               'Programming Language :: Python :: 3.11',
++               'Programming Language :: Python :: 3.12',
++               'Programming Language :: Python :: 3.13',
+                'Topic :: Internet :: WWW/HTTP',
+                'Topic :: Software Development :: Libraries :: Python Modules',
+                'Topic :: Utilities']
+@@ -29,7 +32,7 @@ packages = [
+ [tool.poetry.dependencies]
+ python = "^3.7"
+ 
+-[tool.poetry.dev-dependencies]
++[tool.poetry.group.dev.dependencies]
+ flake8 = "^4.0.1"
+ mypy = "^0.942"
+ pytest = "^7.1.2"
+@@ -42,3 +45,6 @@ types-requests = "^2.27.20"
+ [build-system]
+ requires = ["poetry-core>=1.0.0"]
+ build-backend = "poetry.core.masonry.api"
++
++[tool.pytest.ini_options]
++asyncio_mode = "auto"
+diff --git a/tests/test_backoff_async.py b/tests/test_backoff_async.py
+index 226ef08..08fa7e8 100644
+--- a/tests/test_backoff_async.py
++++ b/tests/test_backoff_async.py
+@@ -665,7 +665,7 @@ async def test_on_exception_callable_gen_kwargs():
+ 
+ 
+ @pytest.mark.asyncio
+-async def test_on_exception_coro_cancelling(event_loop):
++async def test_on_exception_coro_cancelling():
+     sleep_started_event = asyncio.Event()
+ 
+     @backoff.on_predicate(backoff.expo)
+@@ -679,7 +679,8 @@ async def test_on_exception_coro_cancelling(event_loop):
+ 
+         return False
+ 
+-    task = event_loop.create_task(coro())
++    loop = asyncio.get_running_loop()
++    task = loop.create_task(coro())
+ 
+     await sleep_started_event.wait()
+ 
+@@ -692,7 +693,10 @@ def test_on_predicate_on_regular_function_without_event_loop(monkeypatch):
+     monkeypatch.setattr('time.sleep', lambda x: None)
+ 
+     # Set default event loop to None.
+-    loop = asyncio.get_event_loop()
++    try:
++        loop = asyncio.get_event_loop_policy().get_event_loop()
++    except RuntimeError:
++        loop = None
+     asyncio.set_event_loop(None)
+ 
+     try:
+@@ -709,14 +713,18 @@ def test_on_predicate_on_regular_function_without_event_loop(monkeypatch):
+ 
+     finally:
+         # Restore event loop.
+-        asyncio.set_event_loop(loop)
++        if loop is not None:
++            asyncio.set_event_loop(loop)
+ 
+ 
+ def test_on_exception_on_regular_function_without_event_loop(monkeypatch):
+     monkeypatch.setattr('time.sleep', lambda x: None)
+ 
+     # Set default event loop to None.
+-    loop = asyncio.get_event_loop()
++    try:
++        loop = asyncio.get_event_loop_policy().get_event_loop()
++    except RuntimeError:
++        loop = None
+     asyncio.set_event_loop(None)
+ 
+     try:
+@@ -734,4 +742,5 @@ def test_on_exception_on_regular_function_without_event_loop(monkeypatch):
+ 
+     finally:
+         # Restore event loop.
+-        asyncio.set_event_loop(loop)
++        if loop is not None:
++            asyncio.set_event_loop(loop)

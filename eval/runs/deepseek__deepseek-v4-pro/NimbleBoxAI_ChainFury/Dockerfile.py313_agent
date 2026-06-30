@@ -1,0 +1,17 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies needed for building some packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Install the project and test dependencies
+RUN pip install --no-cache-dir -e . pytest
+
+# Run the test suite
+RUN python -m pytest tests/ -v -q

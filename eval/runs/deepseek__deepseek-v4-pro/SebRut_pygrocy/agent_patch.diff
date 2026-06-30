@@ -1,0 +1,28 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..0b83dda
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,11 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++RUN pip install --no-cache-dir -e .
++
++RUN pip install --no-cache-dir responses~=0.21.0 pytest pytest-cov vcrpy pytest-recording pytest-mock
++
++RUN python -m pytest test/ -v
+diff --git a/pygrocy/data_models/generic.py b/pygrocy/data_models/generic.py
+index f14c157..9755d2c 100644
+--- a/pygrocy/data_models/generic.py
++++ b/pygrocy/data_models/generic.py
+@@ -24,3 +24,6 @@ class EntityType(str, Enum):
+     USER_OBJECTS = "userobjects"
+     MEAL_PLAN = "meal_plan"
+     MEAL_PLAN_SECTIONS = "meal_plan_sections"
++
++    def __str__(self):
++        return str(self.value)

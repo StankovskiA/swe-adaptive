@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install the project and all its test dependencies
+RUN pip install --no-cache-dir -r requirements/test.txt && \
+    pip install --no-cache-dir .
+
+# Run the test suite that doesn't require live browser/Selenium session
+RUN python -m pytest tests/test_query.py -q

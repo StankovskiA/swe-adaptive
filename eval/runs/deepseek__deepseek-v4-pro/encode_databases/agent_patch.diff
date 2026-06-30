@@ -1,0 +1,58 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..e907fee
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,22 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Install system dependencies needed for building Python packages
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    gcc \
++    libc6-dev \
++    && rm -rf /var/lib/apt/lists/*
++
++# Copy project files
++COPY . /app
++
++# Upgrade pip and install build tools
++RUN pip install --upgrade pip setuptools wheel
++
++# Install project dependencies from requirements.txt
++RUN pip install -r requirements.txt
++
++# Run the full test suite with SQLite backend
++ENV TEST_DATABASE_URLS="sqlite+aiosqlite:///test.db"
++RUN python -m pytest tests/ -v
+diff --git a/requirements.txt b/requirements.txt
+index 8b05a46..0729996 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,11 +1,11 @@
+ -e .
+ 
+ # Async database drivers
+-asyncmy==0.2.9
++asyncmy==0.2.11
+ aiomysql==0.2.0
+ aiopg==1.4.0
+ aiosqlite==0.20.0
+-asyncpg==0.29.0
++asyncpg==0.31.0
+ 
+ # Sync database drivers for standard tooling around setup/teardown/migrations.
+ psycopg==3.1.18
+diff --git a/setup.py b/setup.py
+index 41c0c58..c79d6ba 100644
+--- a/setup.py
++++ b/setup.py
+@@ -71,6 +71,7 @@ setup(
+         "Programming Language :: Python :: 3.10",
+         "Programming Language :: Python :: 3.11",
+         "Programming Language :: Python :: 3.12",
++        "Programming Language :: Python :: 3.13",
+         "Programming Language :: Python :: 3 :: Only",
+     ],
+     zip_safe=False,

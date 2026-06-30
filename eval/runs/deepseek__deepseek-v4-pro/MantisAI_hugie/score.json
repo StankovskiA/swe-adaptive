@@ -1,0 +1,19 @@
+{
+  "instance_id": "MantisAI_hugie",
+  "model": "deepseek/deepseek-v4-pro",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/MantisAI_hugie/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/MantisAI_hugie/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 12,
+  "patch_lines_removed": 1,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "pyproject.toml"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T12:47:28.636257+00:00"
+}

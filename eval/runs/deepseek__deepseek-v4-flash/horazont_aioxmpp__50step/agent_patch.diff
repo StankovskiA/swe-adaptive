@@ -1,0 +1,100 @@
+diff --git a/aioxmpp/security_layer.py b/aioxmpp/security_layer.py
+index e384cbe..456eabb 100644
+--- a/aioxmpp/security_layer.py
++++ b/aioxmpp/security_layer.py
+@@ -216,18 +216,70 @@ def extract_pk_blob_from_pyasn1(pyasn1_struct):
+     return pyasn1.codec.der.encoder.encode(pk)
+ 
+ 
++def _match_hostname(cert, hostname):
++    """
++    Match a hostname against a certificate structure, similar to the removed
++    :func:`ssl.match_hostname` function.
++    """
++    import ipaddress
++
++    def _hostname_match(hostname, pattern):
++        if not pattern:
++            return False
++        hostname = hostname.lower()
++        pattern = pattern.lower()
++        if '*' not in pattern:
++            return hostname == pattern
++        if pattern.startswith('*.'):
++            if pattern.count('.') < 1:
++                return False
++            pattern_suffix = pattern[2:]
++            if not hostname.endswith(pattern_suffix):
++                return False
++            hostname_prefix = hostname[:-len(pattern_suffix)]
++            if not hostname_prefix or hostname_prefix == '.':
++                return False
++            if hostname.count('.') != pattern.count('.'):
++                return False
++            return True
++        import fnmatch
++        return fnmatch.fnmatch(hostname, pattern)
++
++    san = cert.get('subjectAltName', ())
++    for key, value in san:
++        if key == 'DNS':
++            if _hostname_match(hostname, value):
++                return
++        elif key == 'IP Address':
++            try:
++                ip_addr = ipaddress.ip_address(hostname)
++                if ip_addr == ipaddress.ip_address(value):
++                    return
++            except ValueError:
++                pass
++    subject = cert.get('subject', ())
++    for rdns in subject:
++        for key, value in rdns:
++            if key.lower() in ('commonname', 'cn'):
++                if _hostname_match(hostname, value):
++                    return
++    raise ssl.CertificateError(
++        "hostname %r doesn't match certificate" % hostname
++    )
++
++
+ def check_x509_hostname(x509, hostname):
+     """
+     Check whether the given :class:`OpenSSL.crypto.X509` certificate `x509`
+     matches the given `hostname`.
+ 
+     Return :data:`True` if the name matches and :data:`False` otherwise. This
+-    uses :func:`ssl.match_hostname` and :func:`extract_python_dict_from_x509`.
++    uses :func:`_match_hostname` and :func:`extract_python_dict_from_x509`.
+     """
+ 
+     cert_structure = extract_python_dict_from_x509(x509)
+     try:
+-        ssl.match_hostname(cert_structure, hostname)
++        _match_hostname(cert_structure, hostname)
+     except ssl.CertificateError:
+         return False
+     return True
+diff --git a/setup.py b/setup.py
+index 995d743..44ed742 100644
+--- a/setup.py
++++ b/setup.py
+@@ -34,9 +34,7 @@ with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+ 
+ version_mod = runpy.run_path("aioxmpp/_version.py")
+ 
+-lxml_constraint = "lxml~=4.0"
+-if sys.version_info < (3, 5):
+-    lxml_constraint += ",<4.4"
++lxml_constraint = "lxml>=5.0"
+ 
+ sortedcollections_constraint = "sortedcollections~=2.1"
+ if sys.version_info < (3, 6):
+@@ -49,6 +47,7 @@ install_requires = [
+     'dnspython>=1.0,<3.0',
+     lxml_constraint,
+     'multidict<7,>=2.0',
++    'pytz',
+     sortedcollections_constraint,
+     'pyOpenSSL',
+     'pyasn1',

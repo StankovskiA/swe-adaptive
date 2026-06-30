@@ -1,0 +1,21 @@
+{
+  "instance_id": "openedx-unsupported_bok-choy",
+  "model": "gemini/gemini-3.5-flash",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/openedx-unsupported_bok-choy/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/openedx-unsupported_bok-choy/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 15,
+  "patch_lines_removed": 3,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "requirements/dev.txt",
+    "requirements/needle.txt",
+    "requirements/test.txt"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T14:03:42.108638+00:00"
+}

@@ -1,0 +1,60 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index bad880e7..f5a8847f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -46,7 +46,7 @@ classifiers = [
+     "Topic :: Scientific/Engineering :: Astronomy",
+ ]
+ dependencies = [
+-    "astropy >=5.0,<6",
++    "astropy >=6.0",
+     "astroquery >=0.3.9",
+     "jplephem",
+     "matplotlib >=2.0,!=3.0.1",
+diff --git a/src/poliastro/frames/ecliptic.py b/src/poliastro/frames/ecliptic.py
+index 0f5f9582..86b972fc 100644
+--- a/src/poliastro/frames/ecliptic.py
++++ b/src/poliastro/frames/ecliptic.py
+@@ -12,7 +12,6 @@ from astropy.coordinates import (
+ )
+ from astropy.coordinates.builtin_frames.utils import DEFAULT_OBSTIME, get_jd12
+ from astropy.coordinates.matrix_utilities import (
+-    matrix_product,
+     matrix_transpose,
+     rotation_matrix,
+ )
+@@ -73,7 +72,7 @@ def gcrs_to_geosolarecliptic(gcrs_coo, to_frame):
+ 
+     rot_matrix = _make_rotation_matrix_from_reprs(sun_earth_detilt, x_axis)
+ 
+-    return matrix_product(rot_matrix, _earth_detilt_matrix)
++    return np.dot(rot_matrix, _earth_detilt_matrix)
+ 
+ 
+ @frame_transform_graph.transform(
+diff --git a/src/poliastro/plotting/orbit/backends/matplotlib.py b/src/poliastro/plotting/orbit/backends/matplotlib.py
+index 67e090f5..efaec9ee 100644
+--- a/src/poliastro/plotting/orbit/backends/matplotlib.py
++++ b/src/poliastro/plotting/orbit/backends/matplotlib.py
+@@ -70,7 +70,7 @@ class Matplotlib2D(OrbitPlotterBackend):
+         """
+         if color is None:
+             # HACK: https://stackoverflow.com/a/13831816/554319
+-            color = next(self.ax._get_lines.prop_cycler)["color"]
++            color = self.ax._get_lines.get_next_color()
+ 
+         colors = [color, to_rgba(color, 0)] if trail else [color]
+         return colors
+diff --git a/tests/test_maneuver.py b/tests/test_maneuver.py
+index c36d9218..2dde14a8 100644
+--- a/tests/test_maneuver.py
++++ b/tests/test_maneuver.py
+@@ -20,7 +20,7 @@ def test_maneuver_constructor_raises_error_if_invalid_delta_v():
+         with warnings.catch_warnings():
+             # Different length numpy arrays generate a deprecation warning.
+             warnings.simplefilter(
+-                "ignore", category=np.VisibleDeprecationWarning
++                "ignore", category=np.exceptions.VisibleDeprecationWarning
+             )
+             Maneuver((0 * u.s, dv1), (2 * u.s, dv2))
+     assert "Delta-V must be three dimensions vectors" in excinfo.exconly()

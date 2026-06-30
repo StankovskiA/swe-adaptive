@@ -1,0 +1,19 @@
+{
+  "instance_id": "rhasspy_gruut-ipa",
+  "model": "deepseek/deepseek-v4-pro",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/rhasspy_gruut-ipa/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-pro/rhasspy_gruut-ipa/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 13,
+  "patch_lines_removed": 7,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "requirements_dev.txt"
+  ],
+  "error": null,
+  "scored_at": "2026-06-13T11:31:07.682901+00:00"
+}

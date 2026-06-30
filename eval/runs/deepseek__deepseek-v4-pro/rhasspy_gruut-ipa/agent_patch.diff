@@ -1,0 +1,31 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..9c43c91
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,6 @@
++FROM python:3.13-slim
++WORKDIR /app
++COPY . /app
++RUN pip install --no-cache-dir -e .
++RUN pip install --no-cache-dir pytest
++RUN python -m pytest tests/ -q
+diff --git a/requirements_dev.txt b/requirements_dev.txt
+index e2c0e77..f25b945 100644
+--- a/requirements_dev.txt
++++ b/requirements_dev.txt
+@@ -1,7 +1,7 @@
+-black==19.10b0
+-coverage==5.0.4
+-flake8==3.7.9
+-mypy==0.910
+-pylint==2.10.2
+-pytest==5.4.1
+-pytest-cov==2.8.1
++black>=24.1.0
++coverage>=7.0.0
++flake8>=7.0.0
++mypy>=1.8.0
++pylint>=3.0.0
++pytest>=7.0.0
++pytest-cov>=4.0.0

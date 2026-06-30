@@ -1,0 +1,124 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..cf402d5
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,6 @@
++FROM python:3.13-slim
++WORKDIR /app
++RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
++COPY . /app
++RUN pip install --no-cache-dir -e ".[dev]"
++RUN python -m pytest tests/ -v
+diff --git a/pywhisper/tokenizer.py b/pywhisper/tokenizer.py
+index 88142c4..9f129a3 100644
+--- a/pywhisper/tokenizer.py
++++ b/pywhisper/tokenizer.py
+@@ -126,6 +126,28 @@ TO_LANGUAGE_CODE = {
+ }
+ 
+ 
++def _get_additional_special_tokens(tokenizer):
++    """Get list of additional special tokens, compatible with old and new transformers."""
++    if hasattr(tokenizer, 'additional_special_tokens'):
++        return tokenizer.additional_special_tokens
++    # Newer transformers (>=5.x) store additional special tokens in _extra_special_tokens
++    if hasattr(tokenizer, '_extra_special_tokens'):
++        return [str(t) for t in tokenizer._extra_special_tokens]
++    return []
++
++
++def _get_additional_special_tokens_ids(tokenizer):
++    """Get list of additional special token ids, compatible with old and new transformers."""
++    if hasattr(tokenizer, 'additional_special_tokens_ids'):
++        return tokenizer.additional_special_tokens_ids
++    # Newer transformers (>=5.x): compute from _extra_special_tokens
++    if hasattr(tokenizer, '_extra_special_tokens'):
++        return tokenizer.convert_tokens_to_ids(
++            [str(t) for t in tokenizer._extra_special_tokens]
++        )
++    return []
++
++
+ @dataclass(frozen=True)
+ class Tokenizer:
+     """A thin wrapper around `GPT2TokenizerFast` providing quick access to special tokens"""
+@@ -200,8 +222,8 @@ class Tokenizer:
+ 
+         additional_tokens = dict(
+             zip(
+-                self.tokenizer.additional_special_tokens,
+-                self.tokenizer.additional_special_tokens_ids,
++                _get_additional_special_tokens(self.tokenizer),
++                _get_additional_special_tokens_ids(self.tokenizer),
+             )
+         )
+         candidate = f"<|{self.language}|>"
+@@ -214,10 +236,9 @@ class Tokenizer:
+     @lru_cache()
+     def all_language_tokens(self) -> Tuple[int]:
+         result = []
+-        for token, token_id in zip(
+-            self.tokenizer.additional_special_tokens,
+-            self.tokenizer.additional_special_tokens_ids,
+-        ):
++        additional_special_tokens = _get_additional_special_tokens(self.tokenizer)
++        additional_special_tokens_ids = _get_additional_special_tokens_ids(self.tokenizer)
++        for token, token_id in zip(additional_special_tokens, additional_special_tokens_ids):
+             if token.strip("<|>") in LANGUAGES:
+                 result.append(token_id)
+         return tuple(result)
+diff --git a/setup.py b/setup.py
+index 4aae891..eaab564 100644
+--- a/setup.py
++++ b/setup.py
+@@ -2,7 +2,6 @@ import io
+ import os
+ import re
+ 
+-import pkg_resources
+ from setuptools import setup, find_packages
+ 
+ 
+@@ -19,6 +18,25 @@ def get_version():
+         return re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]', f.read(), re.M).group(1)
+ 
+ 
++def parse_requirements(filename):
++    """Parse requirements.txt file into a list of requirement strings."""
++    requirements = []
++    with io.open(filename, encoding="utf-8") as f:
++        for line in f:
++            line = line.strip()
++            if not line or line.startswith('#'):
++                continue
++            if line.startswith('-r ') or line.startswith('--requirement'):
++                continue
++            if line.startswith('-e '):
++                continue
++            # Remove inline comments
++            if ' #' in line:
++                line = line[:line.find(' #')]
++            requirements.append(line)
++    return requirements
++
++
+ setup(
+     name="pywhisper",
+     py_modules=["pywhisper"],
+@@ -31,12 +49,9 @@ setup(
+     packages=find_packages(exclude=["tests*"]),
+     python_requires=">=3.7",
+     license="MIT",
+-    install_requires=[
+-        str(r)
+-        for r in pkg_resources.parse_requirements(
+-            open(os.path.join(os.path.dirname(__file__), "requirements.txt"))
+-        )
+-    ],
++    install_requires=parse_requirements(
++        os.path.join(os.path.dirname(__file__), "requirements.txt")
++    ),
+     classifiers=[
+         "License :: OSI Approved :: MIT License",
+         "Operating System :: OS Independent",

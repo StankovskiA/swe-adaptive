@@ -1,0 +1,110 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..72fd08f
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,10 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++RUN pip install --no-cache-dir --upgrade pip \
++    && pip install --no-cache-dir -e .[documentation,fast_fft] pytest
++
++RUN python -m pytest tests/
+diff --git a/acoustics/bands.py b/acoustics/bands.py
+index 782a270..97a7b73 100644
+--- a/acoustics/bands.py
++++ b/acoustics/bands.py
+@@ -125,14 +125,14 @@ def _check_band_type(freqs):
+     third_oct_bands = third(12.5, 20000)
+ 
+     def _check_sort(freqs, bands):
+-        index = np.where(np.in1d(bands, freqs))[0]
++        index = np.where(np.isin(bands, freqs))[0]
+         band_pos = index - index[0]
+         return (band_pos == np.arange(band_pos.size)).all()
+ 
+-    if np.in1d(freqs, octave_bands).all():
++    if np.isin(freqs, octave_bands).all():
+         is_sorted = _check_sort(freqs, octave_bands)
+         band_type = "octave" if is_sorted else "octave-unsorted"
+-    elif np.in1d(freqs, third_oct_bands).all():
++    elif np.isin(freqs, third_oct_bands).all():
+         is_sorted = _check_sort(freqs, third_oct_bands)
+         band_type = "third" if is_sorted else "third-unsorted"
+     else:
+diff --git a/acoustics/directivity.py b/acoustics/directivity.py
+index 42528cf..5b54d7f 100644
+--- a/acoustics/directivity.py
++++ b/acoustics/directivity.py
+@@ -17,7 +17,12 @@ from matplotlib.colors import Normalize
+ from mpl_toolkits.mplot3d import Axes3D
+ import numpy as np
+ from scipy.interpolate import interp2d as interpolate
+-from scipy.special import sph_harm  # pylint: disable=no-name-in-module
++try:
++    from scipy.special import sph_harm  # pylint: disable=no-name-in-module
++except ImportError:
++    from scipy.special import sph_harm_y
++    def sph_harm(m, n, theta, phi):
++        return sph_harm_y(n, m, phi, theta)
+ 
+ 
+ def cardioid(theta, a=1.0, k=1.0):
+diff --git a/acoustics/room.py b/acoustics/room.py
+index 32e3b2a..930a61f 100644
+--- a/acoustics/room.py
++++ b/acoustics/room.py
+@@ -20,9 +20,12 @@ def mean_alpha(alphas, surfaces):
+     """
+     Calculate mean of absorption coefficients.
+ 
+-    :param alphas: Absorption coefficients :math:`\\alpha`.
++    :param alphas: Absorption coefficients :math:`\alpha`.
+     :param surfaces: Surfaces :math:`S`.
+     """
++    alphas = np.asarray(alphas)
++    if alphas.ndim == 0:
++        return alphas.item()
+     return np.average(alphas, axis=0, weights=surfaces)
+ 
+ 
+diff --git a/acoustics/signal.py b/acoustics/signal.py
+index 4481ae6..838726a 100644
+--- a/acoustics/signal.py
++++ b/acoustics/signal.py
+@@ -111,6 +111,12 @@ def bandpass_filter(lowcut, highcut, fs, order=8, output='sos'):
+     .. seealso:: :func:`scipy.signal.butter`.
+ 
+     """
++    lowcut = np.asarray(lowcut)
++    if lowcut.size == 1:
++        lowcut = lowcut.item()
++    highcut = np.asarray(highcut)
++    if highcut.size == 1:
++        highcut = highcut.item()
+     nyq = 0.5 * fs
+     low = lowcut / nyq
+     high = highcut / nyq
+diff --git a/acoustics/standards/iec_61672_1_2013.py b/acoustics/standards/iec_61672_1_2013.py
+index 42dd25d..b4f314f 100644
+--- a/acoustics/standards/iec_61672_1_2013.py
++++ b/acoustics/standards/iec_61672_1_2013.py
+@@ -157,9 +157,13 @@ def integrate(data, sample_frequency, integration_time):
+ 
+     """
+     integration_time = np.asarray(integration_time)
++    if integration_time.ndim == 0:
++        integration_time = integration_time.item()
+     sample_frequency = np.asarray(sample_frequency)
++    if sample_frequency.ndim == 0:
++        sample_frequency = sample_frequency.item()
+     samples = data.shape[-1]
+-    b, a = zpk2tf([1.0], [1.0, integration_time], [1.0])
++    b, a = zpk2tf([1.0], [1.0, integration_time], 1.0)
+     b, a = bilinear(b, a, fs=sample_frequency)
+     #b, a = bilinear([1.0], [1.0, integration_time], fs=sample_frequency) # Bilinear: Analog to Digital filter.
+     n = np.floor(integration_time * sample_frequency).astype(int)

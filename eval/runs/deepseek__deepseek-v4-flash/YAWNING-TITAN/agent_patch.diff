@@ -1,0 +1,637 @@
+diff --git a/.gitignore b/.gitignore
+index b68d1bad..efaff26e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -37,3 +37,5 @@ docs/_build
+ # Remove tensorboard logs starting with ppo-
+ ppo-*/
+ **.pkl
++
++.venv*
+\ No newline at end of file
+diff --git a/pyproject.toml b/pyproject.toml
+index 3f559db6..4e9304d7 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,7 +8,7 @@ description = "An abstract, flexible and configurable cyber security simulation.
+ authors = [{name="Defence Science and Technology Laboratory UK", email="oss@dstl.gov.uk"}]
+ license = {file = "LICENSE"}
+ dynamic = ["version", "readme"]
+-requires-python = ">=3.8, <3.11"
++requires-python = ">=3.10, <3.14"
+ classifiers = [
+     "License :: OSI Approved :: MIT License",
+     "Development Status :: 5 - Production/Stable ",
+@@ -17,38 +17,38 @@ classifiers = [
+     "Operating System :: POSIX :: Linux",
+     "Operating System :: Unix",
+     "Programming Language :: Python :: 3",
+-    "Programming Language :: Python :: 3.8",
+-    "Programming Language :: Python :: 3.9",
+     "Programming Language :: Python :: 3.10",
++    "Programming Language :: Python :: 3.11",
++    "Programming Language :: Python :: 3.12",
++    "Programming Language :: Python :: 3.13",
+     "Programming Language :: Python :: 3 :: Only",
+ ]
+ dependencies = [
+-    "Django==4.2",
+-    "django-cors-headers==3.14.0",
+-    "dm-tree==0.1.7",
+-    "gym==0.21.0",
+-    "imageio==2.9.0",
+-    "jupyterlab==3.6.1",
+-    "karateclub==1.3.0",
+-    "matplotlib==3.6.2",
+-    "moviepy==1.0.3",
+-    "networkx==2.5.1",
+-    "numpy==1.23.4",
+-    "pandas==1.3.5",
+-    "platformdirs==2.5.2",
+-    "pyautogui==0.9.53",
+-    "pyyaml==6.0",
+-    "ray[rllib]==2.3.1",
+-    "scipy==1.9.2",
+-    "seaborn==0.12.1",
+-    "stable_baselines3==1.6.2",
+-    "tabulate==0.8.9",
+-    "tensorboard==2.12.3",
+-    "tinydb==4.7.0",
+-    "torch==1.13.1",
+-    "typer[all]==0.7.0",
+-    "typing-extensions==4.4.0",
+-    "waitress==2.1.2"
++    "Django>=4.2,<6",
++    "django-cors-headers>=3.14,<5",
++    "dm-tree>=0.1.7,<0.2",
++    "gymnasium>=0.29,<2",
++    "imageio>=2.9,<3",
++    "jupyterlab>=3.6,<5",
++    "matplotlib>=3.6,<4",
++    "moviepy>=1.0.3,<2",
++    "networkx>=2.5.1,<4",
++    "numpy>=1.23,<3",
++    "pandas>=1.3,<3",
++    "platformdirs>=2.5,<5",
++    "pyautogui>=0.9.53,<1",
++    "pyyaml>=6.0,<7",
++    "ray[rllib]>=2.30,<4",
++    "scipy>=1.9,<2",
++    "seaborn>=0.12,<1",
++    "stable-baselines3>=2.0,<4",
++    "tabulate>=0.8.9,<1",
++    "tensorboard>=2.12,<3",
++    "tinydb>=4.7,<5",
++    "torch>=2.5,<3",
++    "typer[all]>=0.7,<1",
++    "typing-extensions>=4.4,<5",
++    "waitress>=2.1,<4"
+ ]
+ 
+ 
+@@ -63,23 +63,23 @@ license-files = ["LICENSE"]
+ 
+ [project.optional-dependencies]
+ dev = [
+-    "furo==2023.3.27",
+-    "nbmake==1.3.5",
+-    "pip-licenses==4.0.2",
+-    "pre-commit==2.20.0",
+-    "pytest==7.2.0",
+-    "pytest-django==4.5.2",
+-    "pytest-cov==4.0.0",
+-    "pytest-flake8==1.1.1",
+-    "setuptools==66",
+-    "sphinx==5.3.0",
+-    "sphinx-code-tabs==0.5.3",
+-    "sphinx-copybutton==0.5.2",
+-    "wheel==0.38.4",
+-    "build"
++    "furo>=2023.3.27,<2024",
++    "nbmake>=1.3.5,<2",
++    "pip-licenses>=4.0.2,<5",
++    "pre-commit>=2.20,<4",
++    "pytest>=7.2,<9",
++    "pytest-django>=4.5.2,<5",
++    "pytest-cov>=4.0,<6",
++    "pytest-flake8>=1.1.1,<2",
++    "setuptools>=66,<70",
++    "sphinx>=5.3,<8",
++    "sphinx-code-tabs>=0.5.3,<1",
++    "sphinx-copybutton>=0.5.2,<1",
++    "wheel>=0.38,<1",
++    "build>=0.9,<2"
+ ]
+ tensorflow = [
+-    "tensorflow==2.12.0",
++    "tensorflow>=2.12,<3",
+ ]
+ 
+ [project.scripts]
+diff --git a/src/yawning_titan/__init__.py b/src/yawning_titan/__init__.py
+index d3614fe0..1fa0605e 100644
+--- a/src/yawning_titan/__init__.py
++++ b/src/yawning_titan/__init__.py
+@@ -25,7 +25,7 @@ from pathlib import Path, PosixPath, WindowsPath
+ from typing import Final, Union
+ 
+ import yaml
+-from gym.envs.registration import register
++from gymnasium.envs.registration import register
+ from platformdirs import PlatformDirs
+ 
+ register(id="five-node-def-v0", entry_point="yawning_titan.envs.specific:FiveNodeDef")
+diff --git a/src/yawning_titan/agents/keyboard.py b/src/yawning_titan/agents/keyboard.py
+index 3549245c..5b9b2682 100644
+--- a/src/yawning_titan/agents/keyboard.py
++++ b/src/yawning_titan/agents/keyboard.py
+@@ -189,7 +189,7 @@ class KeyboardAgent:
+ 
+             print(final_action)
+             # steps the environment 1 step forward using the chosen blue action
+-            obs, rew, done, notes = self.env.step(final_action)
++            obs, rew, done, truncated, notes = self.env.step(final_action)
+             if notes["blue_action"] != possible_top_actions[chosen_top_action]:
+                 if not (
+                     notes["blue_action"] == "do_nothing"
+diff --git a/src/yawning_titan/envs/generic/core/action_loops.py b/src/yawning_titan/envs/generic/core/action_loops.py
+index ad1840bb..af07b748 100644
+--- a/src/yawning_titan/envs/generic/core/action_loops.py
++++ b/src/yawning_titan/envs/generic/core/action_loops.py
+@@ -75,7 +75,7 @@ class ActionLoop:
+             results = pd.DataFrame(
+                 columns=["action", "rewards", "info"]
+             )  # temporary log to satisfy repeatability tests until logging can be full implemented
+-            obs = self.env.reset()
++            obs, _ = self.env.reset()
+             done = False
+             frame_names = []
+             current_image = 0
+@@ -87,7 +87,7 @@ class ActionLoop:
+                 # TODO: setup logging properly here
+                 # logging.info(f'Blue Agent Action: {action}')
+                 # step the env
+-                obs, rewards, done, info = self.env.step(action)
++                obs, rewards, done, truncated, info = self.env.step(action)
+ 
+                 results.loc[len(results.index)] = [action, rewards, info]
+ 
+@@ -182,13 +182,13 @@ class ActionLoop:
+             results = pd.DataFrame(
+                 columns=["action", "rewards", "info"]
+             )  # temporary log to satisfy repeatability tests until logging can be full implemented
+-            obs = self.env.reset()
++            obs, _ = self.env.reset()
+             done = False
+             while not done:
+                 action, _states = self.agent.predict(obs, deterministic=deterministic)
+                 # TODO: setup logging properly here
+                 # logging.info(f'Blue Agent Action: {action}')
+-                obs, rewards, done, info = self.env.step(action)
++                obs, rewards, done, truncated, info = self.env.step(action)
+                 results.loc[len(results.index)] = [action, rewards, info]
+             complete_results.append(results)
+         return complete_results
+@@ -196,14 +196,14 @@ class ActionLoop:
+     def random_action_loop(self, deterministic=False):
+         """Indefinitely act within the environment taking random actions."""
+         for i in range(self.episode_count):
+-            obs = self.env.reset()
++            obs, _ = self.env.reset()
+             done = False
+             reward = 0
+             while not done:
+                 action = self.agent.predict(
+                     obs, reward, done, deterministic=deterministic
+                 )
+-                ob, reward, done, ep_history = self.env.step(action)
++                ob, reward, done, truncated, ep_history = self.env.step(action)
+                 if done:
+                     break
+ 
+diff --git a/src/yawning_titan/envs/generic/generic_env.py b/src/yawning_titan/envs/generic/generic_env.py
+index 982095ba..2f79e8f0 100644
+--- a/src/yawning_titan/envs/generic/generic_env.py
++++ b/src/yawning_titan/envs/generic/generic_env.py
+@@ -11,9 +11,9 @@ import json
+ from collections import Counter
+ from typing import Dict, Tuple
+ 
+-import gym
++import gymnasium as gym
+ import numpy as np
+-from gym import spaces
++from gymnasium import spaces
+ from stable_baselines3.common.utils import set_random_seed
+ 
+ import yawning_titan.envs.generic.core.reward_functions as reward_functions
+@@ -95,7 +95,7 @@ class GenericNetworkEnv(gym.Env):
+         self.collect_data = collect_additional_per_ts_data
+         self.env_observation = self.network_interface.get_current_observation()
+ 
+-    def reset(self) -> np.array:
++    def reset(self, *, seed=None, options=None) -> Tuple[np.array, dict]:
+         """
+         Reset the environment to the default state.
+ 
+@@ -111,9 +111,9 @@ class GenericNetworkEnv(gym.Env):
+         self.env_observation = self.network_interface.get_current_observation()
+         self.current_game_blue = {}
+ 
+-        return self.env_observation
++        return self.env_observation, {}
+ 
+-    def step(self, action: int) -> Tuple[np.array, float, bool, Dict[str, dict]]:
++    def step(self, action: int) -> Tuple[np.array, float, bool, bool, Dict[str, dict]]:
+         """
+         Take a time step and executes the actions for both Blue RL agent and non-learning Red agent.
+ 
+@@ -403,7 +403,7 @@ class GenericNetworkEnv(gym.Env):
+             json_data = json.dumps(notes)
+             print(json_data)
+         # Returns the environment information that AI gym uses and all of the information collected in a dictionary
+-        return self.env_observation, reward, done, notes
++        return self.env_observation, reward, done, False, notes
+ 
+     def render(
+         self,
+diff --git a/src/yawning_titan/envs/generic/wrappers/graph_embedding_observations.py b/src/yawning_titan/envs/generic/wrappers/graph_embedding_observations.py
+index 99220c50..fff8f832 100644
+--- a/src/yawning_titan/envs/generic/wrappers/graph_embedding_observations.py
++++ b/src/yawning_titan/envs/generic/wrappers/graph_embedding_observations.py
+@@ -1,8 +1,8 @@
+-import gym
++import gymnasium as gym
+ import networkx as nx
+ import numpy as np
+-from gym import ObservationWrapper
+-from gym.spaces import Box
++from gymnasium import ObservationWrapper
++from gymnasium.spaces import Box
+ from karateclub.graph_embedding.feathergraph import FeatherGraph
+ 
+ from yawning_titan.envs.generic.generic_env import GenericNetworkEnv
+diff --git a/src/yawning_titan/envs/specific/core/machines.py b/src/yawning_titan/envs/specific/core/machines.py
+index 118359e7..fafdaf22 100644
+--- a/src/yawning_titan/envs/specific/core/machines.py
++++ b/src/yawning_titan/envs/specific/core/machines.py
+@@ -42,8 +42,8 @@ class Machines:
+             # generate vulnerability
+             vuln_score = (
+                 random.randint(
+-                    (self.vuln_score_lower_bound * 100),
+-                    (self.vuln_score_upper_bound * 100),
++                    int(self.vuln_score_lower_bound * 100),
++                    int(self.vuln_score_upper_bound * 100),
+                 )
+                 / 100.0
+             )
+diff --git a/src/yawning_titan/envs/specific/five_node_def.py b/src/yawning_titan/envs/specific/five_node_def.py
+index a99d8031..09870c36 100644
+--- a/src/yawning_titan/envs/specific/five_node_def.py
++++ b/src/yawning_titan/envs/specific/five_node_def.py
+@@ -22,7 +22,7 @@ Configurable Parameters:
+ import logging
+ from typing import Tuple
+ 
+-import gym
++import gymnasium as gym
+ import numpy as np
+ 
+ from yawning_titan.agents.nsa_red import NSARed
+@@ -90,7 +90,7 @@ class FiveNodeDef(gym.Env):
+         logger.debug("Experiment Started")
+         logger.debug(f"Starting State: {self.initial_states}")
+ 
+-    def reset(self) -> np.array:
++    def reset(self, *, seed=None, options=None) -> Tuple[np.array, dict]:
+         """
+         Reset the environment to the default state.
+ 
+@@ -116,9 +116,9 @@ class FiveNodeDef(gym.Env):
+         logger.debug("Environment Reset")
+         logger.debug(f"Starting State: {self.initial_states}")
+ 
+-        return self._observe()
++        return self._observe(), {}
+ 
+-    def step(self, action: int) -> Tuple[np.array, float, bool, dict]:
++    def step(self, action: int) -> Tuple[np.array, float, bool, bool, dict]:
+         """
+         Take a time step and execute the actions for both Blue RL agent and hard-hard coded Red agent.
+ 
+@@ -174,7 +174,7 @@ class FiveNodeDef(gym.Env):
+         logger.debug(
+             f"Total Reward: {self.total_rewards} Total No. of Steps : {self.total_no_of_steps} No. of Compromised Machines: {self.no_compromised_machines} "
+         )
+-        return observation, reward, self.done, {}
++        return observation, reward, self.done, False, {}
+ 
+     def _observe(self) -> np.array:
+         """
+diff --git a/src/yawning_titan/envs/specific/four_node_def.py b/src/yawning_titan/envs/specific/four_node_def.py
+index 847dba9a..e80cfd11 100644
+--- a/src/yawning_titan/envs/specific/four_node_def.py
++++ b/src/yawning_titan/envs/specific/four_node_def.py
+@@ -34,7 +34,7 @@ Inspired by:
+ import logging
+ from typing import Tuple
+ 
+-import gym
++import gymnasium as gym
+ import networkx as nx
+ import numpy as np
+ 
+@@ -108,7 +108,7 @@ class FourNodeDef(gym.Env):
+         logger.debug("Experiment Started")
+         logger.debug(f"Starting State: {self.initial_states}")
+ 
+-    def reset(self) -> np.array:
++    def reset(self, *, seed=None, options=None) -> Tuple[np.array, dict]:
+         """
+         Reset the environment to the default state.
+ 
+@@ -133,9 +133,9 @@ class FourNodeDef(gym.Env):
+         logger.debug("Environment Reset")
+         logger.debug(f"Starting State: {self.initial_states}")
+ 
+-        return self._observe()
++        return self._observe(), {}
+ 
+-    def step(self, action: int) -> Tuple[np.array, float, bool, dict]:
++    def step(self, action: int) -> Tuple[np.array, float, bool, bool, dict]:
+         """
+         Take a time step and execute the actions for both Blue RL agent and hard-hard coded Red agent.
+ 
+@@ -220,7 +220,7 @@ class FourNodeDef(gym.Env):
+             f"Total Reward: {self.total_rewards} Total No. of Steps : {self.total_no_of_steps}"
+         )
+ 
+-        return observation, reward, self.done, {"action": action}
++        return observation, reward, self.done, False, {"action": action}
+ 
+     def render(self, mode: str = "human"):
+         """Render the environment to the screen so that it can be played in realtime."""
+diff --git a/src/yawning_titan/envs/specific/graph_explore.py b/src/yawning_titan/envs/specific/graph_explore.py
+index b56d20c3..769cc951 100644
+--- a/src/yawning_titan/envs/specific/graph_explore.py
++++ b/src/yawning_titan/envs/specific/graph_explore.py
+@@ -1,7 +1,7 @@
+ import random
+ from typing import Tuple
+ 
+-import gym
++import gymnasium as gym
+ import networkx as nx
+ import numpy as np
+ 
+@@ -54,7 +54,7 @@ class GraphExplore(gym.Env):
+         # score
+         self.BLUE_SCORE = 0
+ 
+-    def step(self, action: int) -> Tuple[np.array, float, bool, dict]:
++    def step(self, action: int) -> Tuple[np.array, float, bool, bool, dict]:
+         """Execute one time step within the environment."""
+         print(
+             "GAME STEP {_step} of {_max}".format(
+@@ -72,7 +72,7 @@ class GraphExplore(gym.Env):
+         done = False
+         if len(self.BLUE_VISIT) == self.NODES or (self.CURRENT_STEP == self.GAME_MAX):
+             done = True
+-        return obs, reward, done, {}
++        return obs, reward, done, False, {}
+ 
+     def _take_action(self, action: int):
+         """Take an action withint the environment from the node chosen to be visited."""
+@@ -129,7 +129,7 @@ class GraphExplore(gym.Env):
+         obs = np.array(obs).reshape(self.NODES, 1, 1)
+         return obs
+ 
+-    def reset(self) -> np.array:
++    def reset(self, *, seed=None, options=None) -> Tuple[np.array, dict]:
+         """Reset the initial game configurations."""
+         # Reset the state of the environment to an initial state
+         print("GAME RESET")
+@@ -141,7 +141,7 @@ class GraphExplore(gym.Env):
+         self.CURRENT_STEP = 0
+         self.BLUE_SCORE = 0
+         self.BLUE_VISIT = [self.INITIAL_BLUE]
+-        return self._next_observation()
++        return self._next_observation(), {}
+ 
+     def render(self, mode: str = "live", close: bool = False):
+         """Render the environment to the screen so that it can be played in realtime."""
+diff --git a/src/yawning_titan/envs/specific/nsa_node_def.py b/src/yawning_titan/envs/specific/nsa_node_def.py
+index aee3120f..3937bb0c 100644
+--- a/src/yawning_titan/envs/specific/nsa_node_def.py
++++ b/src/yawning_titan/envs/specific/nsa_node_def.py
+@@ -50,9 +50,9 @@ Configurable parameters:
+ import logging
+ from typing import Tuple
+ 
+-import gym
++import gymnasium as gym
+ import numpy as np
+-from gym import spaces
++from gymnasium import spaces
+ 
+ from yawning_titan.agents.nsa_red import NSARed
+ from yawning_titan.envs.generic.helpers.graph2plot import CustomEnvGraph
+@@ -126,7 +126,7 @@ class NodeEnv(gym.Env):
+         logger.debug("Experiment Started")
+         logger.debug(f"Starting State: {self.state.get_observation()}")
+ 
+-    def reset(self) -> np.array:
++    def reset(self, *, seed=None, options=None) -> Tuple[np.array, dict]:
+         """
+         Reset the environment to the default state.
+ 
+@@ -146,9 +146,9 @@ class NodeEnv(gym.Env):
+         logger.debug("Environment Reset")
+         logger.debug(f"Starting State: {self.state.get_observation()}")
+ 
+-        return self.env_observation
++        return self.env_observation, {}
+ 
+-    def step(self, action: int) -> Tuple[np.array, float, bool, dict]:
++    def step(self, action: int) -> Tuple[np.array, float, bool, bool, dict]:
+         """
+         Take one timestep within the environment.
+ 
+@@ -256,6 +256,7 @@ class NodeEnv(gym.Env):
+             self.env_observation,
+             reward,
+             done,
++            False,
+             {"nodes": self.state.get_number_of_un_compromised()},
+         )
+ 
+diff --git a/src/yawning_titan/experiment_helpers/sb3.py b/src/yawning_titan/experiment_helpers/sb3.py
+index 6421eef0..890252cf 100644
+--- a/src/yawning_titan/experiment_helpers/sb3.py
++++ b/src/yawning_titan/experiment_helpers/sb3.py
+@@ -1,7 +1,7 @@
+ import logging
+ from statistics import mean
+ 
+-import gym
++import gymnasium as gym
+ from scipy.stats import describe, iqr
+ from stable_baselines3 import A2C, DQN, PPO
+ from stable_baselines3.a2c import MlpPolicy as A2CMlp
+diff --git a/src/yawning_titan/integrations/dcbo/data_gen_cli.py b/src/yawning_titan/integrations/dcbo/data_gen_cli.py
+index 7fda20eb..74e6484e 100644
+--- a/src/yawning_titan/integrations/dcbo/data_gen_cli.py
++++ b/src/yawning_titan/integrations/dcbo/data_gen_cli.py
+@@ -84,7 +84,7 @@ for current_env in all_envs:
+     current_var_4 = []
+     while current_step < MAX_STEP and not done:
+         action = agent.predict(None, 0, done, current_env)
+-        env_observation, reward, done, notes = current_env.step(action)
++        env_observation, reward, done, truncated, notes = current_env.step(action)
+ 
+         cost = (cost_action_1 * math.floor(agent.probabilities[0])) + (
+             cost_action_2 * math.floor(agent.probabilities[1])
+diff --git a/src/yawning_titan/integrations/dcbo/utils.py b/src/yawning_titan/integrations/dcbo/utils.py
+index 781e7557..75b26912 100644
+--- a/src/yawning_titan/integrations/dcbo/utils.py
++++ b/src/yawning_titan/integrations/dcbo/utils.py
+@@ -1,7 +1,7 @@
+ from logging import getLogger
+ from typing import List, Optional
+ 
+-from gym import spaces
++from gymnasium import spaces
+ from stable_baselines3.common.env_checker import check_env
+ 
+ from yawning_titan.agents.sinewave_red import SineWaveRedAgent
+diff --git a/tests/e2e_integration_tests/test_generic_env_e2e.py b/tests/e2e_integration_tests/test_generic_env_e2e.py
+index 62208482..eb5dfdcd 100644
+--- a/tests/e2e_integration_tests/test_generic_env_e2e.py
++++ b/tests/e2e_integration_tests/test_generic_env_e2e.py
+@@ -88,7 +88,7 @@ def test_generic_env_e2e(
+     prev_high_value = None
+     for _ in range(N_TIME_STEPS):
+         current_chosen_action = random_action_generator.get_action()
+-        obs, rew, done, episode = env.step(current_chosen_action)
++        obs, rew, done, truncated, episode = env.step(current_chosen_action)
+ 
+         counts = calculate_counts(episode, counts, done)
+ 
+diff --git a/tests/integration_tests/env/test_five_node_def.py b/tests/integration_tests/env/test_five_node_def.py
+index 53c0528e..21459a4f 100644
+--- a/tests/integration_tests/env/test_five_node_def.py
++++ b/tests/integration_tests/env/test_five_node_def.py
+@@ -1,4 +1,4 @@
+-import gym
++import gymnasium as gym
+ import pytest
+ from stable_baselines3 import PPO
+ from stable_baselines3.ppo import MlpPolicy as PPOMlp
+diff --git a/tests/integration_tests/env/test_nsa_node_env.py b/tests/integration_tests/env/test_nsa_node_env.py
+index 98602ca6..04d38768 100644
+--- a/tests/integration_tests/env/test_nsa_node_env.py
++++ b/tests/integration_tests/env/test_nsa_node_env.py
+@@ -1,4 +1,4 @@
+-import gym
++import gymnasium as gym
+ import pytest
+ from stable_baselines3 import PPO
+ from stable_baselines3.ppo import MlpPolicy as PPOMlp
+diff --git a/tests/integration_tests/env/test_stable_baselines_compliance.py b/tests/integration_tests/env/test_stable_baselines_compliance.py
+index efe043f5..0f74e2b5 100644
+--- a/tests/integration_tests/env/test_stable_baselines_compliance.py
++++ b/tests/integration_tests/env/test_stable_baselines_compliance.py
+@@ -1,4 +1,4 @@
+-import gym
++import gymnasium as gym
+ import pytest
+ from stable_baselines3.common.env_checker import check_env
+ 
+diff --git a/tests/integration_tests/generic_env/test_env_reset.py b/tests/integration_tests/generic_env/test_env_reset.py
+index 16286e49..3f49bd01 100644
+--- a/tests/integration_tests/generic_env/test_env_reset.py
++++ b/tests/integration_tests/generic_env/test_env_reset.py
+@@ -20,7 +20,7 @@ def test_env_reset(create_yawning_titan_run):
+     check_env(env, warn=True)
+     env.reset()
+     for i in range(0, N_TIME_STEPS):
+-        obs, rew, done, notes = env.step(
++        obs, rew, done, truncated, notes = env.step(
+             random.randint(0, env.BLUE.get_number_of_actions() - 1)
+         )
+         if done:
+diff --git a/tests/integration_tests/generic_env/test_graph_embedding_observations.py b/tests/integration_tests/generic_env/test_graph_embedding_observations.py
+index 54a41084..bea3be64 100644
+--- a/tests/integration_tests/generic_env/test_graph_embedding_observations.py
++++ b/tests/integration_tests/generic_env/test_graph_embedding_observations.py
+@@ -44,7 +44,7 @@ def test_obs_size(
+     observation_size = env.calculate_observation_space_size(with_feather=True)
+ 
+     for i in range(5):
+-        obs = env.reset()
++        obs, _ = env.reset()
+         assert len(obs) == observation_size
+ 
+ 
+@@ -74,7 +74,7 @@ def test_obs_range(
+ 
+     env = FeatherGraphEmbedObservation(yt_run.env, n_nodes)
+     for _ in range(5):
+-        obs = env.reset()
++        obs, _ = env.reset()
+         np.set_printoptions(suppress=True)
+         start = 0
+         if env.network_interface.game_mode.observation_space.node_connections.value:
+diff --git a/tests/integration_tests/generic_env/test_high_value_node_and_entry_nodes_matching.py b/tests/integration_tests/generic_env/test_high_value_node_and_entry_nodes_matching.py
+index 0140a8d7..f1c6b394 100644
+--- a/tests/integration_tests/generic_env/test_high_value_node_and_entry_nodes_matching.py
++++ b/tests/integration_tests/generic_env/test_high_value_node_and_entry_nodes_matching.py
+@@ -31,7 +31,7 @@ def test_high_value_node_and_entry_nodes_matching(create_yawning_titan_run):
+ 
+         targets = {}
+         for i in range(0, N_TIME_STEPS_LONG):
+-            obs, rew, done, notes = env.step(
++            obs, rew, done, truncated, notes = env.step(
+                 random.randint(0, env.BLUE.get_number_of_actions() - 1)
+             )
+             if done:
+diff --git a/tests/integration_tests/generic_env/test_new_entry_nodes.py b/tests/integration_tests/generic_env/test_new_entry_nodes.py
+index 7cf03320..603e0200 100644
+--- a/tests/integration_tests/generic_env/test_new_entry_nodes.py
++++ b/tests/integration_tests/generic_env/test_new_entry_nodes.py
+@@ -16,7 +16,7 @@ def test_new_entry_nodes(create_yawning_titan_run):
+     env.reset()
+     entry_nodes = {}
+     for i in range(0, 10000):
+-        obs, rew, done, notes = env.step(
++        obs, rew, done, truncated, notes = env.step(
+             random.randint(0, env.BLUE.get_number_of_actions() - 1)
+         )
+         if done:
+diff --git a/tests/integration_tests/generic_env/test_new_high_value_node.py b/tests/integration_tests/generic_env/test_new_high_value_node.py
+index f90c6c71..79c3a67e 100644
+--- a/tests/integration_tests/generic_env/test_new_high_value_node.py
++++ b/tests/integration_tests/generic_env/test_new_high_value_node.py
+@@ -20,7 +20,7 @@ def test_new_high_value_node(create_yawning_titan_run):
+     env.reset()
+     nodes = defaultdict(lambda: 0)
+     for i in range(0, N_TIME_STEPS_LONG):
+-        obs, rew, done, notes = env.step(
++        obs, rew, done, truncated, notes = env.step(
+             random.randint(0, env.BLUE.get_number_of_actions() - 1)
+         )
+         if done:
+diff --git a/tests/integration_tests/generic_env/test_new_vulnerabilities.py b/tests/integration_tests/generic_env/test_new_vulnerabilities.py
+index 33828e8d..7d394e67 100644
+--- a/tests/integration_tests/generic_env/test_new_vulnerabilities.py
++++ b/tests/integration_tests/generic_env/test_new_vulnerabilities.py
+@@ -19,7 +19,7 @@ def test_new_vulnerabilities(create_yawning_titan_run):
+     vulnerabilities = 0
+     resets = 0
+     for i in range(0, N_TIME_STEPS):
+-        obs, rew, done, notes = env.step(
++        obs, rew, done, truncated, notes = env.step(
+             random.randint(0, env.BLUE.get_number_of_actions() - 1)
+         )
+         if done:

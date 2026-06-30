@@ -1,0 +1,13 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index bad880e7..0ce6fe60 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -46,7 +46,7 @@ classifiers = [
+     "Topic :: Scientific/Engineering :: Astronomy",
+ ]
+ dependencies = [
+-    "astropy >=5.0,<6",
++    "astropy >=7.0",
+     "astroquery >=0.3.9",
+     "jplephem",
+     "matplotlib >=2.0,!=3.0.1",

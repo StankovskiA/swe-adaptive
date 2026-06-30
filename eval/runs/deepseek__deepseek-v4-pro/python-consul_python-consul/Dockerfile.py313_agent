@@ -1,0 +1,22 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies needed by consul binary and tests
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Upgrade pip and setuptools
+RUN pip install --upgrade pip setuptools wheel
+
+# Install the project and all test dependencies
+RUN pip install -e ".[tornado,asyncio,twisted]"
+
+# Install test dependencies
+RUN pip install pytest pytest-twisted py
+
+# Run the full test suite
+RUN python -m pytest tests/ -v -q

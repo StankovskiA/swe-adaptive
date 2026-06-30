@@ -1,0 +1,21 @@
+{
+  "instance_id": "caltechlibrary_handprint",
+  "model": "gemini/gemini-3.5-flash",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/caltechlibrary_handprint/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/caltechlibrary_handprint/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 54,
+  "patch_lines_removed": 31,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "handprint/comparison.py",
+    "requirements-dev.txt",
+    "requirements.txt"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T14:22:16.294590+00:00"
+}

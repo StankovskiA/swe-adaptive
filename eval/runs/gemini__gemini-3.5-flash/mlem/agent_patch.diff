@@ -1,0 +1,84 @@
+diff --git a/mlem/api/migrations.py b/mlem/api/migrations.py
+index 1553c83..aebf14b 100644
+--- a/mlem/api/migrations.py
++++ b/mlem/api/migrations.py
+@@ -20,7 +20,7 @@ def migrate(path: str, project: Optional[str] = None, recursive: bool = False):
+     except MlemObjectNotFound:
+         pass
+ 
+-    postfix = f"/**{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
++    postfix = f"/**/*{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
+     for filepath in location.fs.glob(
+         location.fullpath + postfix, detail=False
+     ):
+diff --git a/mlem/core/artifacts.py b/mlem/core/artifacts.py
+index 991148e..f092400 100644
+--- a/mlem/core/artifacts.py
++++ b/mlem/core/artifacts.py
+@@ -291,7 +291,7 @@ class LocalStorage(FSSpecStorage):
+         if isinstance(fs, LocalFileSystem):
+             return LocalStorage(uri=self.create_uri(path))
+         protocol = fs.protocol
+-        if isinstance(protocol, list):
++        if isinstance(protocol, (list, tuple)):
+             protocol = protocol[0]
+         storage = FSSpecStorage(uri=f"{protocol}://{path}")
+         storage.fs = fs
+diff --git a/mlem/core/metadata.py b/mlem/core/metadata.py
+index 78d1a9a..c344c02 100644
+--- a/mlem/core/metadata.py
++++ b/mlem/core/metadata.py
+@@ -288,7 +288,7 @@ def list_objects(
+ ) -> Dict[Type[MlemObject], List[MlemObject]]:
+     loc = Location.resolve(path, fs=fs)
+     result = defaultdict(list)
+-    postfix = f"/**{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
++    postfix = f"/**/*{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
+     for filepath in loc.fs.glob(loc.fullpath + postfix, detail=False):
+         meta = load_meta(
+             filepath,
+diff --git a/setup.py b/setup.py
+index 526b335..c85a1c2 100644
+--- a/setup.py
++++ b/setup.py
+@@ -6,9 +6,9 @@ install_requires = [
+     "cloudpickle",
+     "dill",
+     "requests",
+-    "isort>=5.10",
++    "isort>=5.10,<6",
+     "pydantic>=1.9.0,<2",
+-    "typer",
++    "typer>=0.6,<0.9",
+     "click<8.2",
+     "rich",
+     "aiohttp<4",
+@@ -27,7 +27,7 @@ install_requires = [
+ ]
+ 
+ tests = [
+-    "pytest",
++    "pytest<8",
+     "pytest-cov",
+     "pytest-lazy-fixture==0.6.3",
+     "pytest-mock",
+@@ -67,8 +67,8 @@ extras = {
+     "scipy": ["scipy"],
+     "onnx": ["onnx"],
+     "onnxruntime": [
+-        "protobuf==3.20.1",
+-        "onnxruntime<1.14",
++        "protobuf",
++        "onnxruntime",
+     ],  # TODO - see if it can be merged with onnx
+     "catboost": ["catboost"],
+     "xgboost": ["xgboost"],
+@@ -115,7 +115,7 @@ for e in [
+     extras[f"dvc-{e}"] = [f"dvc[{e}]~=2.0"]
+ 
+ extras["all"] = [_ for e in extras.values() for _ in e]
+-extras["tests"] += [e for e in extras["all"] if e[: len("dvc[")] != "dvc["]
++extras["tests"] += extras["pandas"] + extras["numpy"] + extras["sklearn"] + extras["scipy"] + extras["fastapi"]
+ 
+ setup_args = dict(  # noqa: C408
+     name="mlem",

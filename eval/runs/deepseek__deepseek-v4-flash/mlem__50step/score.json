@@ -1,0 +1,25 @@
+{
+  "instance_id": "mlem",
+  "model": "deepseek/deepseek-v4-flash",
+  "resolved": false,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-flash/mlem/Dockerfile.py313_agent",
+  "docker_exit_code": 1,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-flash/mlem/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 32,
+  "patch_lines_removed": 11,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "mlem/api/migrations.py",
+    "mlem/core/artifacts.py",
+    "mlem/core/metadata.py",
+    "mlem/utils/mlem.isort.cfg",
+    "mlem/utils/module.py",
+    "setup.py",
+    "tests/cli/test_main.py"
+  ],
+  "error": null,
+  "scored_at": "2026-06-13T11:54:14.173022+00:00"
+}

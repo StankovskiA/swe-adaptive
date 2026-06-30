@@ -1,0 +1,46 @@
+diff --git a/seleniumwire/thirdparty/mitmproxy/optmanager.py b/seleniumwire/thirdparty/mitmproxy/optmanager.py
+index 4fc37e4..19d4b84 100644
+--- a/seleniumwire/thirdparty/mitmproxy/optmanager.py
++++ b/seleniumwire/thirdparty/mitmproxy/optmanager.py
+@@ -6,7 +6,8 @@ import textwrap
+ import typing
+ 
+ import blinker
+-import blinker._saferef
++import weakref
++import types
+ 
+ from seleniumwire.thirdparty.mitmproxy import exceptions
+ from seleniumwire.thirdparty.mitmproxy.utils import typecheck
+@@ -135,12 +136,16 @@ class OptManager:
+ 
+         # We reuse blinker's safe reference functionality to cope with weakrefs
+         # to bound methods.
+-        func = blinker._saferef.safe_ref(func)
++        # Create a weak reference that works for both regular functions and bound methods
++        if isinstance(func, types.MethodType):
++            _func_ref = weakref.WeakMethod(func)
++        else:
++            _func_ref = weakref.ref(func)
+ 
+         @functools.wraps(func)
+         def _call(options, updated):
+             if updated.intersection(set(opts)):
+-                f = func()
++                f = _func_ref()
+                 if f:
+                     f(options, updated)
+                 else:
+diff --git a/setup.py b/setup.py
+index ac0d829..b2fe722 100644
+--- a/setup.py
++++ b/setup.py
+@@ -69,7 +69,7 @@ setup(
+             'pytest-cov',
+             'tox',
+             'twine',
+-            'werkzeug==2.0.3',
++            'werkzeug>=3.0',
+             'wheel',
+         ],
+     },

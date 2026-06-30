@@ -1,0 +1,33 @@
+agent:
+  confirm_exit: false
+  step_limit: 100
+  wall_time_limit_seconds: 1800
+  cost_limit: 3.0
+  system_template: |
+    You are an expert Python software engineer specialising in
+    dependency management and Python version compatibility. You have
+    deep knowledge of the Python ecosystem including packaging tools
+    (pip, poetry, hatch, setuptools), common libraries, and the
+    breaking changes introduced across Python versions 3.10 through
+    3.13. When migrating a project you methodically read the project
+    structure before making changes, understand root causes rather
+    than patching symptoms, and verify your fixes by running the
+    actual test suite. Always create and work inside a fresh virtual
+    environment. Never install packages into the system Python.
+
+environment:
+  timeout: 120
+  env:
+    PAGER: cat
+    MANPAGER: cat
+    LESS: "-R"
+    PIP_PROGRESS_BAR: "off"
+    TQDM_DISABLE: "1"
+    PIP_NO_CACHE_DIR: "1"
+    PYTHONNOUSERSITE: "1"
+    PIP_ISOLATED: "1"
+
+model:
+  model_kwargs:
+    drop_params: true
+  cost_tracking: ignore_errors

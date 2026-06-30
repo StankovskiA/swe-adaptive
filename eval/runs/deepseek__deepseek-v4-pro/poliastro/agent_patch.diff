@@ -1,0 +1,107 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 00000000..b8ea64fb
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,24 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Install system dependencies needed for building packages
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    gcc \
++    g++ \
++    gfortran \
++    make \
++    && rm -rf /var/lib/apt/lists/*
++
++# Set matplotlib backend to non-interactive Agg
++ENV MPLBACKEND=Agg
++
++# Copy the project files
++COPY . /app
++
++# Install the project and its dependencies
++RUN pip install --upgrade pip setuptools wheel
++RUN pip install ".[test]"
++
++# Run the full test suite
++RUN python -m pytest tests/ -v
+diff --git a/pyproject.toml b/pyproject.toml
+index bad880e7..f5a8847f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -46,7 +46,7 @@ classifiers = [
+     "Topic :: Scientific/Engineering :: Astronomy",
+ ]
+ dependencies = [
+-    "astropy >=5.0,<6",
++    "astropy >=6.0",
+     "astroquery >=0.3.9",
+     "jplephem",
+     "matplotlib >=2.0,!=3.0.1",
+diff --git a/src/poliastro/frames/ecliptic.py b/src/poliastro/frames/ecliptic.py
+index 0f5f9582..397226d2 100644
+--- a/src/poliastro/frames/ecliptic.py
++++ b/src/poliastro/frames/ecliptic.py
+@@ -11,11 +11,7 @@ from astropy.coordinates import (
+     get_body,
+ )
+ from astropy.coordinates.builtin_frames.utils import DEFAULT_OBSTIME, get_jd12
+-from astropy.coordinates.matrix_utilities import (
+-    matrix_product,
+-    matrix_transpose,
+-    rotation_matrix,
+-)
++from astropy.coordinates.matrix_utilities import rotation_matrix
+ import erfa
+ import numpy as np
+ 
+@@ -73,14 +69,16 @@ def gcrs_to_geosolarecliptic(gcrs_coo, to_frame):
+ 
+     rot_matrix = _make_rotation_matrix_from_reprs(sun_earth_detilt, x_axis)
+ 
+-    return matrix_product(rot_matrix, _earth_detilt_matrix)
++    # matrix_product removed in astropy >=6.0, use @ instead
++    return rot_matrix @ _earth_detilt_matrix
+ 
+ 
+ @frame_transform_graph.transform(
+     DynamicMatrixTransform, GeocentricSolarEcliptic, GCRS
+ )
+ def geosolarecliptic_to_gcrs(from_coo, gcrs_frame):
+-    return matrix_transpose(gcrs_to_geosolarecliptic(gcrs_frame, from_coo))
++    # matrix_transpose removed in astropy >=6.0, use .swapaxes(-2, -1) instead
++    return gcrs_to_geosolarecliptic(gcrs_frame, from_coo).swapaxes(-2, -1)
+ 
+ 
+ def _obliquity_rotation_value(equinox):
+diff --git a/src/poliastro/plotting/orbit/backends/matplotlib.py b/src/poliastro/plotting/orbit/backends/matplotlib.py
+index 67e090f5..efaec9ee 100644
+--- a/src/poliastro/plotting/orbit/backends/matplotlib.py
++++ b/src/poliastro/plotting/orbit/backends/matplotlib.py
+@@ -70,7 +70,7 @@ class Matplotlib2D(OrbitPlotterBackend):
+         """
+         if color is None:
+             # HACK: https://stackoverflow.com/a/13831816/554319
+-            color = next(self.ax._get_lines.prop_cycler)["color"]
++            color = self.ax._get_lines.get_next_color()
+ 
+         colors = [color, to_rgba(color, 0)] if trail else [color]
+         return colors
+diff --git a/tests/test_maneuver.py b/tests/test_maneuver.py
+index c36d9218..33d8d51c 100644
+--- a/tests/test_maneuver.py
++++ b/tests/test_maneuver.py
+@@ -19,9 +19,7 @@ def test_maneuver_constructor_raises_error_if_invalid_delta_v():
+     with pytest.raises(ValueError) as excinfo:
+         with warnings.catch_warnings():
+             # Different length numpy arrays generate a deprecation warning.
+-            warnings.simplefilter(
+-                "ignore", category=np.VisibleDeprecationWarning
+-            )
++            warnings.simplefilter("ignore")
+             Maneuver((0 * u.s, dv1), (2 * u.s, dv2))
+     assert "Delta-V must be three dimensions vectors" in excinfo.exconly()
+ 

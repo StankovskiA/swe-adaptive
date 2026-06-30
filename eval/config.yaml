@@ -1,0 +1,43 @@
+# SWE-Adaptive Evaluation Configuration
+
+benchmark_base: /swe-adaptive
+benchmark_folders:
+  - validated_success_benchmark
+  - success_benchmark
+  - success_benchmark_manual
+
+eval_base: /swe-adaptive/eval
+
+# mini-swe-agent settings
+agent_command: /home/user/.pyenv/versions/3.13.1/bin/mini
+agent_timeout_seconds: 2700   # 45 minutes per instance
+
+tmp_dir: /tmp
+
+# API key env vars to check for presence (values are never logged).
+# run_eval.py loads .env from benchmark_base and maps project-specific names
+# to the standard LiteLLM names expected by mini-swe-agent.
+api_keys_to_check:
+  - GEMINI_API_KEY
+  - SWE_ADAPTIVE_GEMINI_API_KEY
+  - OPENROUTER_API_KEY
+  - ANTHROPIC_API_KEY
+  - OPENAI_API_KEY
+  - DEEPSEEK_API_KEY
+  - GROQ_API_KEY
+
+# Models available for evaluation.
+# Add any model string mini-swe-agent accepts.
+models:
+  gemini/gemini-2.0-flash:
+    env_key: GEMINI_API_KEY
+  gemini/gemini-2.5-flash-preview-05-20:
+    env_key: GEMINI_API_KEY
+  deepseek/deepseek-v4-flash:
+    env_key: DEEPSEEK_API_KEY
+  deepseek/deepseek-v4-pro:
+    env_key: DEEPSEEK_API_KEY
+  claude-sonnet-4-6:
+    env_key: ANTHROPIC_API_KEY
+  openai/gpt-4o:
+    env_key: OPENAI_API_KEY

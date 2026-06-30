@@ -1,0 +1,22 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies needed for some Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Install the project with test dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -e ".[tests]"
+
+# Run the test suite
+RUN python -m pytest tests/ -q --timeout=120 -x --ignore=tests/contrib --ignore=tests/runtime \
+    -k "not long and not need_test_repo_auth and not s3 and not gs and not azure and not docker and not kubernetes and not conda" \
+    || python -m pytest tests/ -q --timeout=120 -x \
+    --ignore=tests/contrib --ignore=tests/runtime \
+    -k "not long and not need_test_repo_auth and not s3 and not gs and not azure and not docker and not kubernetes and not conda"

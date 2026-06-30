@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index 995d743..5760e9f 100644
+--- a/setup.py
++++ b/setup.py
+@@ -34,7 +34,7 @@ with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+ 
+ version_mod = runpy.run_path("aioxmpp/_version.py")
+ 
+-lxml_constraint = "lxml~=4.0"
++lxml_constraint = "lxml>=4.0"
+ if sys.version_info < (3, 5):
+     lxml_constraint += ",<4.4"
+ 

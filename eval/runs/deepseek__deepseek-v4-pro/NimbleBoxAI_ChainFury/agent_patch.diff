@@ -1,0 +1,269 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..1435e7b
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,17 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Install system dependencies needed for building some packages
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    gcc \
++    libc6-dev \
++    && rm -rf /var/lib/apt/lists/*
++
++COPY . /app
++
++# Install the project and test dependencies
++RUN pip install --no-cache-dir -e . pytest
++
++# Run the test suite
++RUN python -m pytest tests/ -v -q
+diff --git a/chainfury/base.py b/chainfury/base.py
+index 04f1617..7daa413 100644
+--- a/chainfury/base.py
++++ b/chainfury/base.py
+@@ -42,8 +42,8 @@ class Var:
+         self,
+         type: Union[str, List["Var"]] = "",
+         format: str = "",
+-        items: List["Var"] = [],
+-        additionalProperties: Union[List["Var"], "Var"] = [],
++        items: Optional[List["Var"]] = None,
++        additionalProperties: Optional[Union[List["Var"], "Var"]] = None,
+         password: bool = False,
+         #
+         required: bool = False,
+@@ -77,7 +77,7 @@ class Var:
+         self.additionalProperties = additionalProperties
+         self.password = password
+         #
+-        self.required = required
++        self.required = required or []
+         self.placeholder = placeholder
+         self.show = show
+         self.name = name
+@@ -680,8 +680,8 @@ class Model:
+         description: str = "",
+         default_mode: Optional[str] = "chat",
+         fn: Optional[object] = None,
+-        usage: List[Union[str, int]] = [],
+-        tags=[],
++        usage: Optional[List[Union[str, int]]] = None,
++        tags: Optional[List[str]] = None,
+         log_trace: bool = False,
+     ):
+         """Defines a single callable model.
+@@ -699,7 +699,7 @@ class Model:
+         self.description = description
+         self.default_mode = default_mode
+         self.fn = fn
+-        self.usage = usage
++        self.usage = usage or []
+         if fn is not None:
+             self.vars = func_to_vars(
+                 func=fn,
+@@ -707,7 +707,7 @@ class Model:
+             )
+         else:
+             self.vars = []
+-        self.tags = tags
++        self.tags = tags or [] or []
+ 
+     def __repr__(self) -> str:
+         return f"Model('{self.id}')"
+@@ -803,7 +803,7 @@ class Node:
+         fields: List[Var],
+         outputs: List[Var],
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+         allow_callback: bool = False,
+     ):
+         """Node is a single unit of computation in a Dag. All the actions are considered as nodes.
+@@ -834,7 +834,7 @@ class Node:
+         self.fields: List[Var] = fields
+         self.outputs: List[Var] = outputs
+         self.fn = fn
+-        self.tags = tags
++        self.tags = tags or []
+         self.allow_callback = allow_callback
+         self.templates = []
+ 
+@@ -1131,9 +1131,9 @@ class Chain:
+         name: Optional[str] = None,
+         description: Optional[str] = None,
+         default_model: Optional[Model] = None,
+-        nodes: List[Node] = [],
+-        edges: List[Edge] = [],
+-        sample: Dict[str, Any] = {},
++        nodes: Optional[List[Node]] = None,
++        edges: Optional[List[Edge]] = None,
++        sample: Optional[Dict[str, Any]] = None,
+         main_in: str = "",
+         main_out: str = "",
+     ):
+@@ -1143,6 +1143,11 @@ class Chain:
+         self.default_model = default_model
+         self.chain_id: Optional[str] = None
+ 
++        # avoid mutable default arguments
++        nodes = nodes or []
++        edges = edges or []
++        sample = sample or {}
++
+         # perform checks and validations
+         self.is_empty = not nodes and not edges
+         self.nodes: Dict[str, Node] = {node.id: node for node in nodes}
+@@ -1851,22 +1856,41 @@ class Action:
+         self,
+         name: str,
+         description: str,
+-        properties: Optional[Dict[str, Any]] = {},
+-        required: Optional[List[str]] = [],
++        properties: Optional[Dict[str, Any]] = None,
++        required: Optional[List[str]] = None,
+         fn: Optional[Callable] = None,
+         fn_meta: Optional[Dict[str, Any]] = None,
+     ):
+         self.name = name
+         self.description = description
+-        self.properties = properties
+-        self.required = required
++        self.properties = properties or {}
++        self.required = required or []
+ 
+         if (fn is None and fn_meta is None) or (fn is not None and fn_meta is not None):
+             raise ValueError("Either fn or fn_meta is required")
+         if fn_meta is not None:
+             # first validate that the line content is same in the two files, then try to load the item
+-            if not os.path.exists(fn_meta["file"]):
+-                raise ValueError(f"File {fn_meta['file']} does not exist")
++            _orig_file = fn_meta["file"]
++            if not os.path.exists(_orig_file):
++                # Try to find the file relative to the current working directory
++                # This handles cases where the code is moved (e.g., Docker builds)
++                _basename = os.path.basename(_orig_file)
++                _found = False
++                for root, dirs, files in os.walk(os.getcwd()):
++                    if _basename in files:
++                        _candidate = os.path.join(root, _basename)
++                        # Verify this is the right file by checking the function name
++                        try:
++                            import importlib.util
++                            _spec = importlib.util.spec_from_file_location(fn_meta["name"], _candidate)
++                            if _spec:
++                                fn_meta["file"] = _candidate
++                                _found = True
++                                break
++                        except Exception:
++                            pass
++                if not _found:
++                    raise ValueError(f"File {_orig_file} does not exist and could not be found")
+             with open(fn_meta["file"], "r") as f:
+                 for i, l in enumerate(f):
+                     if i == fn_meta["line"] and l != fn_meta["line_val"]:
+@@ -1877,10 +1901,17 @@ class Action:
+                         )
+             fn = load_module_from_path(fn_meta["name"], fn_meta["file"])
+         elif fn is not None:
++            try:
++                _src_lines, _src_lnum = inspect.getsourcelines(fn)
++                _line = _src_lnum - 1
++                _line_val = _src_lines[0]
++            except (OSError, TypeError):
++                _line = -1
++                _line_val = ""
+             fn_meta = {
+                 "file": inspect.getfile(fn),
+-                "line": inspect.getsourcelines(fn)[1] - 1,
+-                "line_val": inspect.getsourcelines(fn)[0][0],
++                "line": _line,
++                "line_val": _line_val,
+                 "name": fn.__name__,
+             }
+ 
+diff --git a/chainfury/core.py b/chainfury/core.py
+index 11370f0..4356aa8 100644
+--- a/chainfury/core.py
++++ b/chainfury/core.py
+@@ -49,7 +49,7 @@ class ProgramaticActionsRegistry:
+         outputs: Dict[str, Tuple[int]],
+         node_id: str = "",
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+     ) -> Node:
+         node_id = node_id or str(uuid4())
+         ops = func_to_return_vars(func=fn, returns=outputs)
+@@ -70,7 +70,7 @@ class ProgramaticActionsRegistry:
+         outputs: Dict[str, Tuple[int]],
+         node_id: str = "",
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+     ) -> Node:
+         """Register a programatic action in the registry
+ 
+@@ -380,7 +380,7 @@ class AIActionsRegistry:
+         outputs: Dict[str, Any],
+         action_name: str = "",
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+     ) -> Node:
+         """
+         This function will register this action in the local AI registry so it is accesible everywhere. Use this when
+@@ -660,7 +660,7 @@ class MemoryRegistry:
+         outputs: Dict[str, Any],
+         vector_key: str,
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+     ) -> Node:
+         node_id = f"{component_name}-write"
+         mem_fn = Memory(node_id=node_id, fn=fn, vector_key=vector_key, read_mode=False)
+@@ -684,7 +684,7 @@ class MemoryRegistry:
+         outputs: Dict[str, Any],
+         vector_key: str,
+         description: str = "",
+-        tags: List[str] = [],
++        tags: Optional[List[str]] = None,
+     ) -> Node:
+         node_id = f"{component_name}-read"
+         mem_fn = Memory(node_id=node_id, fn=fn, vector_key=vector_key, read_mode=True)
+diff --git a/pyproject.toml b/pyproject.toml
+index 05bedbe..f919996 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,12 +8,12 @@ readme = "README.md"
+ repository = "https://github.com/NimbleBoxAI/ChainFury"
+ 
+ [tool.poetry.dependencies]
+-python = "^3.9,<3.12"
+-tuneapi = "0.1.1"
++python = ">=3.9,<3.14"
++tuneapi = ">=0.4.16"
+ fire = "0.5.0"
+ Jinja2 = "3.1.2"
+ jinja2schema = "0.1.4"
+-pydantic = "2.6.1"
++pydantic = ">=2.6.1"
+ requests = "^2.31.0"
+ python-dotenv = "1.0.0"
+ urllib3 = ">=1.26.18"
+diff --git a/server/pyproject.toml b/server/pyproject.toml
+index dc1342e..e8165b1 100644
+--- a/server/pyproject.toml
++++ b/server/pyproject.toml
+@@ -11,7 +11,7 @@ repository = "https://github.com/NimbleBoxAI/ChainFury"
+ include = ["chainfury_server/static/*", "chainfury_server/static/*/*"]
+ 
+ [tool.poetry.dependencies]
+-python = ">=3.9,<3.12"
++python = ">=3.9,<3.14"
+ black = "23.3.0"
+ fastapi = "^0.109.2"
+ fire = "0.5.0"

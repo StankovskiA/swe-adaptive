@@ -1,0 +1,17 @@
+FROM python:3.13-slim
+WORKDIR /app
+COPY . /app
+
+# Install build tools needed for packages that compile from source
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir setuptools wheel
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-dev.txt
+RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir pytest
+RUN python -m pytest tests/ -v

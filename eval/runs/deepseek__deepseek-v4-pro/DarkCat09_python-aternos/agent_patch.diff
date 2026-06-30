@@ -1,0 +1,24 @@
+diff --git a/requirements.txt b/requirements.txt
+index 0952ca9..14482a7 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,5 +1,5 @@
+ cloudscraper==1.2.71
+ Js2Py==0.74
+-lxml==4.9.2
++lxml>=5.0
+ regex==2023.6.3
+ websockets==11.0.3
+diff --git a/setup.py b/setup.py
+index 966083d..21a03d8 100644
+--- a/setup.py
++++ b/setup.py
+@@ -37,7 +37,7 @@ setuptools.setup(
+     install_requires=[
+         'cloudscraper==1.2.71',
+         'Js2Py==0.74',
+-        'lxml==4.9.2',
++        'lxml>=5.0',
+         'regex==2023.6.3',
+         'websockets==11.0.3',
+     ],

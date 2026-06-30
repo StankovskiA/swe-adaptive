@@ -1,0 +1,18 @@
+{
+  "instance_id": "poliastro",
+  "model": "gemini/gemini-3.5-flash",
+  "timestamp_start": "2026-06-14T15:52:42.925905+00:00",
+  "timed_out": false,
+  "agent_exit_code": 1,
+  "error": "Fatal agent error: mini-swe-agent aborted (non-interactive setup)",
+  "agent_command": "/home/user/.pyenv/versions/3.13.1/bin/mini -c mini.yaml -c /swe_adaptive/swe_adaptive_eval/mini_config.yaml --model gemini/gemini-3.5-flash --yolo --exit-immediately --output /swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/poliastro/trajectory.json --task 'This Python repository was developed for an older Python version and\ncurrently fails under Python 3.13.\n\nThe error output from attempting to run it on Python 3.13 is shown\nbelow. Read the repository carefully before attempting any fix.\n\n=== Python 3.13 Error Output ===\n**Docker image:** `Dockerfile.py313`\n**Python version:** 3.13\n**Result:** Build fails at install step \u2014 `astropy` cannot be built\n\n### Error \u2014 `setuptools.dep_util` removed\n\n```\nFile \"astropy/wcs/setup_package.py\", line 13, in <module>\n    from setuptools.dep_util import newer_group\nModuleNotFoundError: No module named '\"'\"'setuptools.dep_util'\"'\"'\n```\n\n**Root cause:** `astropy >=5.0,<6` (required by poliastro) uses `setuptools.dep_util` in its build system (`astropy/wcs/setup_package.py`). The `dep_util` submodule was removed from setuptools in version 58.0 (2021). On Python 3.13, pip'\"'\"'s build isolation environment pulls in a modern setuptools (>=58), causing astropy'\"'\"'s wheel build to fail before any code can run.\n\n**Minimal fix:** Upgrade `astropy` to `>=6.0` which rewrites its build system to not use `setuptools.dep_util`, making it compatible with modern setuptools and Python 3.13.\n\n---\n=== End of Error Output ===\n\nYour goal is to make this repository fully functional under Python 3.13.\n\nYou must produce two things:\n\n1. Any changes to source files, pyproject.toml, setup.cfg, setup.py,\n   or other project files needed to make the project compatible with\n   Python 3.13\n\n2. A file called Dockerfile.py313 in the repository root that:\n   - Uses python:3.13-slim as the base image\n   - Installs the project and all its dependencies\n   - Runs the full test suite using RUN (not CMD), so that test\n     failures cause the docker build itself to fail\n   - Exits 0 if and only if all tests pass\n\n   Example structure:\n   FROM python:3.13-slim\n   WORKDIR /app\n   COPY . /app\n   RUN pip install ...\n   RUN python -m pytest tests/ -q\n\nBefore submitting, verify your Dockerfile works by running:\n    docker build -f Dockerfile.py313 -t swe_verify_$(date +%s) .\nThis must exit 0 before you submit. If it fails, read the error,\nfix the problem, and rebuild until it passes.\n\nConstraints:\n- Do NOT remove, skip, or weaken existing tests. You may update test\n  code only to adapt to genuine API or behaviour changes in dependencies\n- Your Dockerfile must work from a clean python:3.13-slim base with\n  no pre-installed packages\n- Always work inside fresh virtual environments, never the system Python\n- In your Dockerfile, always use RUN to execute tests, never CMD'",
+  "timestamp_end": "2026-06-14T16:00:59.019675+00:00",
+  "wall_time_seconds": 496,
+  "iterations": null,
+  "input_tokens_total": null,
+  "output_tokens_total": null,
+  "cost_usd": null,
+  "resolved": false,
+  "patch_empty": true,
+  "trajectory_parse_error": null
+}

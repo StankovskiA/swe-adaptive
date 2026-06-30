@@ -1,0 +1,10 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install -e . && \
+    pip install pytest==7.0.1 pytest-cov==4.0.0 pytest-xdist==2.1.0 pytest-sugar==1.1.1
+
+RUN pytest tests/ -v

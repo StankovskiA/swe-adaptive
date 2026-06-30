@@ -1,0 +1,84 @@
+diff --git a/chainfury/__init__.py b/chainfury/__init__.py
+index 561671f..295f231 100644
+--- a/chainfury/__init__.py
++++ b/chainfury/__init__.py
+@@ -36,8 +36,6 @@ from chainfury.client import get_client
+ from chainfury.types import (
+     Message,
+     Thread,
+-    ThreadsList,
+-    Dataset,
+     human,
+     system,
+     assistant,
+diff --git a/chainfury/base.py b/chainfury/base.py
+index 04f1617..a76df26 100644
+--- a/chainfury/base.py
++++ b/chainfury/base.py
+@@ -1131,9 +1131,9 @@ class Chain:
+         name: Optional[str] = None,
+         description: Optional[str] = None,
+         default_model: Optional[Model] = None,
+-        nodes: List[Node] = [],
+-        edges: List[Edge] = [],
+-        sample: Dict[str, Any] = {},
++        nodes: Optional[List[Node]] = None,
++        edges: Optional[List[Edge]] = None,
++        sample: Optional[Dict[str, Any]] = None,
+         main_in: str = "",
+         main_out: str = "",
+     ):
+@@ -1144,6 +1144,12 @@ class Chain:
+         self.chain_id: Optional[str] = None
+ 
+         # perform checks and validations
++        if nodes is None:
++            nodes = []
++        if edges is None:
++            edges = []
++        if sample is None:
++            sample = {}
+         self.is_empty = not nodes and not edges
+         self.nodes: Dict[str, Node] = {node.id: node for node in nodes}
+         self.edges = edges
+diff --git a/chainfury/types.py b/chainfury/types.py
+index 185607f..87ed72b 100644
+--- a/chainfury/types.py
++++ b/chainfury/types.py
+@@ -9,8 +9,6 @@ from pydantic import BaseModel, Field, ConfigDict
+ from tuneapi.types.chats import (
+     Message,
+     Thread,
+-    ThreadsList,
+-    Dataset,
+     human,
+     system,
+     assistant,
+diff --git a/pyproject.toml b/pyproject.toml
+index 05bedbe..f2f743a 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,16 +8,16 @@ readme = "README.md"
+ repository = "https://github.com/NimbleBoxAI/ChainFury"
+ 
+ [tool.poetry.dependencies]
+-python = "^3.9,<3.12"
+-tuneapi = "0.1.1"
+-fire = "0.5.0"
+-Jinja2 = "3.1.2"
++python = ">=3.9,<3.14"
++tuneapi = "^8.0.33"
++fire = ">=0.5.0,<1"
++Jinja2 = ">=3.1.2,<4"
+ jinja2schema = "0.1.4"
+-pydantic = "2.6.1"
++pydantic = ">=2.6.1,<3"
+ requests = "^2.31.0"
+-python-dotenv = "1.0.0"
++python-dotenv = ">=1.0.0,<2"
+ urllib3 = ">=1.26.18"
+-tabulate = "0.9.0"
++tabulate = ">=0.9.0,<1"
+ "cryptography" = ">=41.0.6"
+ stability-sdk = { version = "0.8.3", optional = true }
+ qdrant-client = { version = "1.5.4", optional = true }

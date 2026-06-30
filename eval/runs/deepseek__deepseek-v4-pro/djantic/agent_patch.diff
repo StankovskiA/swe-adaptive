@@ -1,0 +1,68 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..50e5472
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,21 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++# Install dependencies
++RUN pip install --no-cache-dir \
++    "pydantic>=1.8.2,<2" \
++    "Django>=4.2,<5" \
++    pytest \
++    pytest-django \
++    pytest-cov \
++    factory-boy \
++    psycopg2-binary
++
++# Install the project itself in editable mode
++RUN pip install --no-cache-dir -e .
++
++# Run the full test suite
++RUN DJANGO_SETTINGS_MODULE=tests.testapp.settings python -m pytest tests/ -v --tb=short
+diff --git a/pyproject.toml b/pyproject.toml
+index 35f3ed5..450f633 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,7 +8,7 @@ license = "MIT"
+ [tool.poetry.dependencies]
+ python = "^3.7"
+ pydantic = "^1.8.2"
+-Django = "~3"
++Django = "^4.2"
+ 
+ [tool.poetry.dev-dependencies]
+ black = "^21.7b0"
+@@ -28,7 +28,7 @@ pymdown-extensions = "^8.2"
+ rich = "^10.6.0"
+ django-stubs = "^1.8.0"
+ pytest-django = "^4.4.0"
+-psycopg2 = "^2.9.1"
++psycopg2-binary = "^2.9.1"
+ bump2version = "^1.0.1"
+ factory-boy = "^3.2.1"
+ 
+diff --git a/setup.py b/setup.py
+index 484eb8e..c554d8f 100644
+--- a/setup.py
++++ b/setup.py
+@@ -29,10 +29,14 @@ setup(
+         "Framework :: Django :: 3.1",
+         "Framework :: Django :: 3.2",
+         "Framework :: Django :: 4.0",
++        "Framework :: Django :: 4.2",
+         "Programming Language :: Python",
+         "Programming Language :: Python :: 3.7",
+         "Programming Language :: Python :: 3.8",
+         "Programming Language :: Python :: 3.9",
+         "Programming Language :: Python :: 3.10",
++        "Programming Language :: Python :: 3.11",
++        "Programming Language :: Python :: 3.12",
++        "Programming Language :: Python :: 3.13",
+     ],
+ )

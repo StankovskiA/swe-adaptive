@@ -1,0 +1,43 @@
+diff --git a/.coverage.A006-00191.local.40133.867539 b/.coverage.A006-00191.local.40133.867539
+deleted file mode 100644
+index 25d8158..0000000
+Binary files a/.coverage.A006-00191.local.40133.867539 and /dev/null differ
+diff --git a/requirements/dev.txt b/requirements/dev.txt
+index 32e405d..0f5566e 100644
+--- a/requirements/dev.txt
++++ b/requirements/dev.txt
+@@ -164,7 +164,7 @@ python-slugify==8.0.1
+     # via
+     #   -r requirements/needle.txt
+     #   code-annotations
+-pyyaml==6.0
++pyyaml==6.0.2
+     # via
+     #   -r requirements/needle.txt
+     #   code-annotations
+diff --git a/requirements/needle.txt b/requirements/needle.txt
+index 6c76768..029d507 100644
+--- a/requirements/needle.txt
++++ b/requirements/needle.txt
+@@ -126,7 +126,7 @@ python-slugify==8.0.1
+     # via
+     #   -r requirements/test.txt
+     #   code-annotations
+-pyyaml==6.0
++pyyaml==6.0.2
+     # via
+     #   -r requirements/test.txt
+     #   code-annotations
+diff --git a/requirements/test.txt b/requirements/test.txt
+index 8a3468f..749191b 100644
+--- a/requirements/test.txt
++++ b/requirements/test.txt
+@@ -79,7 +79,7 @@ pytest-xdist==3.2.1
+     # via -r requirements/test.in
+ python-slugify==8.0.1
+     # via code-annotations
+-pyyaml==6.0
++pyyaml==6.0.2
+     # via code-annotations
+ selenium==3.141.0
+     # via -r requirements/base.txt

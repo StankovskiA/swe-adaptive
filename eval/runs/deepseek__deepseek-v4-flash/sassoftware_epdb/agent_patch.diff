@@ -1,0 +1,56 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..e2f4f99
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,14 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++# Install build dependencies and the project
++RUN pip install --no-cache-dir six pytest mock pytest-mock
++
++# Install the project itself
++RUN pip install --no-cache-dir -e .
++
++# Run the full test suite
++RUN python -m pytest test/ -v
+diff --git a/epdb/epdb_client.py b/epdb/epdb_client.py
+index 70ea074..d65b04c 100644
+--- a/epdb/epdb_client.py
++++ b/epdb/epdb_client.py
+@@ -35,13 +35,13 @@ import signal
+ import struct
+ import socket
+ import sys
+-import telnetlib
++from epdb import telnetlib
+ import termios
+ import time
+ 
+ import epdb
+ 
+-from telnetlib import IAC, IP, SB, SE, NAWS
++from epdb.telnetlib import IAC, IP, SB, SE, NAWS
+ 
+ TERMKEY = b'\x1d'  # equals ^]
+ 
+diff --git a/epdb/epdb_server.py b/epdb/epdb_server.py
+index 3e927c2..3c34260 100644
+--- a/epdb/epdb_server.py
++++ b/epdb/epdb_server.py
+@@ -48,9 +48,9 @@ import six
+ import socket
+ import struct
+ import sys
+-import telnetlib
++from epdb import telnetlib
+ import termios
+-from telnetlib import IAC, IP, SB, SE, DO, DONT, WILL, TM, NAWS
++from epdb.telnetlib import IAC, IP, SB, SE, DO, DONT, WILL, TM, NAWS
+ 
+ IPRESP = b'\x03'  # chr(ord('C') & 0x1F)
+ 

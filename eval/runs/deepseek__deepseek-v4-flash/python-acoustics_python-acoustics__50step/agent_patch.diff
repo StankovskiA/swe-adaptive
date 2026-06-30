@@ -1,0 +1,86 @@
+diff --git a/acoustics/bands.py b/acoustics/bands.py
+index 782a270..97a7b73 100644
+--- a/acoustics/bands.py
++++ b/acoustics/bands.py
+@@ -125,14 +125,14 @@ def _check_band_type(freqs):
+     third_oct_bands = third(12.5, 20000)
+ 
+     def _check_sort(freqs, bands):
+-        index = np.where(np.in1d(bands, freqs))[0]
++        index = np.where(np.isin(bands, freqs))[0]
+         band_pos = index - index[0]
+         return (band_pos == np.arange(band_pos.size)).all()
+ 
+-    if np.in1d(freqs, octave_bands).all():
++    if np.isin(freqs, octave_bands).all():
+         is_sorted = _check_sort(freqs, octave_bands)
+         band_type = "octave" if is_sorted else "octave-unsorted"
+-    elif np.in1d(freqs, third_oct_bands).all():
++    elif np.isin(freqs, third_oct_bands).all():
+         is_sorted = _check_sort(freqs, third_oct_bands)
+         band_type = "third" if is_sorted else "third-unsorted"
+     else:
+diff --git a/acoustics/directivity.py b/acoustics/directivity.py
+index 42528cf..3b675c8 100644
+--- a/acoustics/directivity.py
++++ b/acoustics/directivity.py
+@@ -17,7 +17,7 @@ from matplotlib.colors import Normalize
+ from mpl_toolkits.mplot3d import Axes3D
+ import numpy as np
+ from scipy.interpolate import interp2d as interpolate
+-from scipy.special import sph_harm  # pylint: disable=no-name-in-module
++from scipy.special import sph_harm_y  # pylint: disable=no-name-in-module
+ 
+ 
+ def cardioid(theta, a=1.0, k=1.0):
+@@ -49,7 +49,7 @@ def spherical_harmonic(theta, phi, m=0, n=0):
+     .. seealso:: :func:`scipy.special.sph_harm`
+ 
+     """
+-    return sph_harm(m, n, phi, theta).real
++    return sph_harm_y(n, m, theta, phi).real
+ 
+ 
+ def spherical_to_cartesian(r, theta, phi):
+diff --git a/acoustics/room.py b/acoustics/room.py
+index 32e3b2a..63fb42a 100644
+--- a/acoustics/room.py
++++ b/acoustics/room.py
+@@ -23,7 +23,10 @@ def mean_alpha(alphas, surfaces):
+     :param alphas: Absorption coefficients :math:`\\alpha`.
+     :param surfaces: Surfaces :math:`S`.
+     """
+-    return np.average(alphas, axis=0, weights=surfaces)
++    alphas_arr = np.asarray(alphas)
++    surfaces_arr = np.asarray(surfaces)
++    axis = 0 if alphas_arr.ndim > 0 else None
++    return np.average(alphas_arr, axis=axis, weights=surfaces_arr)
+ 
+ 
+ def nrc(alphas):
+diff --git a/acoustics/signal.py b/acoustics/signal.py
+index 4481ae6..af06bff 100644
+--- a/acoustics/signal.py
++++ b/acoustics/signal.py
+@@ -114,7 +114,7 @@ def bandpass_filter(lowcut, highcut, fs, order=8, output='sos'):
+     nyq = 0.5 * fs
+     low = lowcut / nyq
+     high = highcut / nyq
+-    output = butter(order / 2, [low, high], btype='band', output=output)
++    output = butter(int(order / 2), [float(low), float(high)], btype='band', output=output)
+     return output
+ 
+ 
+diff --git a/acoustics/standards/iec_61672_1_2013.py b/acoustics/standards/iec_61672_1_2013.py
+index 42dd25d..26e73a6 100644
+--- a/acoustics/standards/iec_61672_1_2013.py
++++ b/acoustics/standards/iec_61672_1_2013.py
+@@ -159,7 +159,7 @@ def integrate(data, sample_frequency, integration_time):
+     integration_time = np.asarray(integration_time)
+     sample_frequency = np.asarray(sample_frequency)
+     samples = data.shape[-1]
+-    b, a = zpk2tf([1.0], [1.0, integration_time], [1.0])
++    b, a = zpk2tf([1.0], [1.0, integration_time], 1.0)
+     b, a = bilinear(b, a, fs=sample_frequency)
+     #b, a = bilinear([1.0], [1.0, integration_time], fs=sample_frequency) # Bilinear: Analog to Digital filter.
+     n = np.floor(integration_time * sample_frequency).astype(int)

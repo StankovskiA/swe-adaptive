@@ -1,0 +1,20 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install system build dependencies needed for compiling some Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt \
+    && pip install --no-cache-dir -e . \
+    && pip install --no-cache-dir pytest
+
+# Run the test suite
+RUN python -m pytest tests/ -v

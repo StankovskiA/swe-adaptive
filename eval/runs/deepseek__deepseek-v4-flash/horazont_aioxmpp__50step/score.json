@@ -1,0 +1,16 @@
+{
+  "instance_id": "horazont_aioxmpp",
+  "model": "deepseek/deepseek-v4-flash",
+  "resolved": false,
+  "scoring_error": false,
+  "dockerfile_generated": false,
+  "agent_dockerfile_path": null,
+  "docker_exit_code": null,
+  "docker_build_log_path": null,
+  "patch_empty": false,
+  "patch_lines_added": 0,
+  "patch_lines_removed": 0,
+  "patch_files_changed": [],
+  "error": "Agent did not generate Dockerfile.py313",
+  "scored_at": "2026-06-13T10:03:46.463393+00:00"
+}

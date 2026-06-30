@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install build dependencies if needed (lxml now has wheels, so this should be fine)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install test dependencies
+RUN pip install --no-cache-dir requests-mock
+
+# Run the test suite
+RUN python -m unittest discover -v ./tests

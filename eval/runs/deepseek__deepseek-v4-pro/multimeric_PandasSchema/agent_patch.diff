@@ -1,0 +1,122 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..2b7ee7f
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,5 @@
++FROM python:3.13-slim
++WORKDIR /app
++COPY . /app
++RUN pip install -e . pytest
++RUN python -m pytest test/ -v
+diff --git a/pandas_schema/schema.py b/pandas_schema/schema.py
+index 0648d6c..9466d6c 100644
+--- a/pandas_schema/schema.py
++++ b/pandas_schema/schema.py
+@@ -64,7 +64,7 @@ class Schema:
+         # We associate the column objects in the schema with data frame series either by name or by position, depending
+         # on the value of self.ordered
+         if self.ordered:
+-            series = [x[1] for x in df.iteritems()]
++            series = [x[1] for x in df.items()]
+             column_pairs = zip(series, self.columns)
+         else:
+             column_pairs = []
+diff --git a/pandas_schema/validation.py b/pandas_schema/validation.py
+index 5f7c763..12fde6e 100644
+--- a/pandas_schema/validation.py
++++ b/pandas_schema/validation.py
+@@ -9,7 +9,7 @@ import operator
+ from . import column
+ from .validation_warning import ValidationWarning
+ from .errors import PanSchArgumentError
+-from pandas.api.types import is_categorical_dtype, is_numeric_dtype
++from pandas.api.types import is_numeric_dtype
+ 
+ 
+ class _BaseValidation:
+@@ -86,7 +86,7 @@ class _SeriesValidation(_BaseValidation):
+         if column.allow_empty:
+             # Failing results are those that are not empty, and fail the validation
+             # explicitly check to make sure the series isn't a category because issubdtype will FAIL if it is
+-            if is_categorical_dtype(series) or is_numeric_dtype(series):
++            if isinstance(series.dtype, pd.CategoricalDtype) or is_numeric_dtype(series):
+                 validated = ~series.isnull() & simple_validation
+             else:
+                 validated = (series.str.len() > 0) & simple_validation
+@@ -227,7 +227,13 @@ class IsDtypeValidation(_BaseValidation):
+         super().__init__(**kwargs)
+ 
+     def get_errors(self, series: pd.Series, column: 'column.Column' = None):
+-        if not np.issubdtype(series.dtype, self.dtype):
++        try:
++            is_subdtype = np.issubdtype(series.dtype, self.dtype)
++        except TypeError:
++            # pandas extension dtypes (e.g. StringDtype) may not be interpretable by numpy.
++            # In that case, the dtype is not a subdtype of the expected numpy dtype.
++            is_subdtype = False
++        if not is_subdtype:
+             return [ValidationWarning(
+                 'The column {} has a dtype of {} which is not a subclass of the required type {}'.format(
+                     column.name if column else '', series.dtype, self.dtype
+@@ -329,7 +335,7 @@ class TrailingWhitespaceValidation(_SeriesValidation):
+         return 'contains trailing whitespace'
+ 
+     def validate(self, series: pd.Series) -> pd.Series:
+-        return ~series.astype(str).str.contains('\s+$')
++        return ~series.astype(str).str.contains(r'\s+$')
+ 
+ 
+ class LeadingWhitespaceValidation(_SeriesValidation):
+@@ -345,7 +351,7 @@ class LeadingWhitespaceValidation(_SeriesValidation):
+         return 'contains leading whitespace'
+ 
+     def validate(self, series: pd.Series) -> pd.Series:
+-        return ~series.astype(str).str.contains('^\s+')
++        return ~series.astype(str).str.contains(r'^\s+')
+ 
+ 
+ class IsDistinctValidation(_SeriesValidation):
+diff --git a/test/test_schema.py b/test/test_schema.py
+index df900ae..3c1540e 100644
+--- a/test/test_schema.py
++++ b/test/test_schema.py
+@@ -1,7 +1,6 @@
+ from io import StringIO
+ import unittest
+ import pandas as pd
+-from numpy.core.multiarray import dtype
+ 
+ from pandas_schema import Schema, Column, ValidationWarning
+ from pandas_schema.validation import LeadingWhitespaceValidation, IsDtypeValidation
+diff --git a/test/test_validation.py b/test/test_validation.py
+index fc40100..11057a6 100644
+--- a/test/test_validation.py
++++ b/test/test_validation.py
+@@ -345,7 +345,7 @@ class DateFormat(ValidationTestBase):
+ 
+ class StringRegexMatch(ValidationTestBase):
+     def setUp(self):
+-        self.validator = MatchesPatternValidation('^.+\.txt$')
++        self.validator = MatchesPatternValidation(r'^.+\.txt$')
+ 
+     def test_valid_strings(self):
+         self.validate_and_compare(
+@@ -408,7 +408,7 @@ class CompiledRegexMatch(ValidationTestBase):
+     """
+ 
+     def setUp(self):
+-        self.validator = MatchesPatternValidation(re.compile('^.+\.txt$', re.IGNORECASE))
++        self.validator = MatchesPatternValidation(re.compile(r'^.+\.txt$', re.IGNORECASE))
+ 
+     def test_valid_strings(self):
+         self.validate_and_compare(
+@@ -536,7 +536,7 @@ class Dtype(ValidationTestBase):
+         self.assertEqual(
+             sorted([str(x) for x in errors]),
+             sorted([
+-                'The column wrong_dtype1 has a dtype of object which is not a subclass of the required type int64',
++                'The column wrong_dtype1 has a dtype of str which is not a subclass of the required type int64',
+                 'The column wrong_dtype2 has a dtype of int64 which is not a subclass of the required type float64',
+                 'The column wrong_dtype3 has a dtype of float64 which is not a subclass of the required type int64'
+             ])

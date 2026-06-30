@@ -1,0 +1,26 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies required by some Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy project files
+COPY pyproject.toml poetry.lock README.md CHANGELOG.md ./
+COPY openapi_tester/ ./openapi_tester/
+COPY test_project/ ./test_project/
+COPY tests/ ./tests/
+COPY manage.py setup.cfg ./
+
+# Install pip and poetry
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir "poetry>=1.8,<3.0"
+
+# Install the project with all dependencies including extras (needed for test_project settings)
+# Use --no-root to avoid installing the project itself first, then install with extras
+RUN poetry install --no-interaction --no-ansi --extras "drf-yasg drf-spectacular"
+
+# Run the test suite using poetry run to access the virtual environment
+RUN poetry run python -m pytest tests/ -q

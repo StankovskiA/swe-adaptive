@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements.txt test-requirements.txt ./
+COPY pyproject.toml setup.cfg ./
+COPY ripeupdater/ ./ripeupdater/
+COPY tests/ ./tests/
+COPY templates/ ./templates/
+
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt -r test-requirements.txt
+
+RUN python -m pytest tests/ -q

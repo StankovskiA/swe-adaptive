@@ -1,0 +1,22 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the project files
+COPY pyproject.toml README.md /app/
+COPY chainfury/ /app/chainfury/
+COPY tests/ /app/tests/
+
+# Install the project and dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -e .
+
+# Run the test suite
+RUN python3 tests/main.py

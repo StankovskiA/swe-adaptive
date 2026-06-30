@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Copy the project files
+COPY . /app
+
+# Install with more verbose output and check what's slow
+RUN pip install -e ".[test]" --verbose 2>&1 | tail -30

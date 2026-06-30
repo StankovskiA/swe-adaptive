@@ -1,0 +1,23 @@
+{
+  "instance_id": "python-acoustics_python-acoustics",
+  "model": "gemini/gemini-3.5-flash",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/python-acoustics_python-acoustics/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/python-acoustics_python-acoustics/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 34,
+  "patch_lines_removed": 6,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "acoustics/bands.py",
+    "acoustics/directivity.py",
+    "acoustics/room.py",
+    "acoustics/signal.py",
+    "acoustics/standards/iec_61672_1_2013.py"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T14:39:13.149401+00:00"
+}

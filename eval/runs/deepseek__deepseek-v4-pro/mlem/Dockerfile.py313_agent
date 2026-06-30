@@ -1,0 +1,101 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+COPY . /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    make \
+    git \
+    libffi-dev \
+    libssl-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install the project with core and test dependencies, pinning
+# versions that are compatible with pydantic v1
+RUN pip install --no-cache-dir \
+    cloudpickle \
+    dill \
+    requests \
+    "isort>=5.10" \
+    "pydantic>=1.9.0,<2" \
+    typer \
+    "click<8.2" \
+    rich \
+    "aiohttp<4" \
+    aiohttp_swagger \
+    "Jinja2>=3" \
+    "fsspec>=2021.7.0" \
+    "pyparsing<4" \
+    cached-property \
+    entrypoints \
+    gitpython \
+    python-gitlab \
+    flatdict \
+    "iterative-telemetry>=0.0.6" \
+    python-multipart \
+    importlib-metadata \
+    pyyaml \
+    pytest \
+    pytest-cov \
+    "pytest-lazy-fixture==0.6.3" \
+    pytest-mock \
+    "pylint<2.14" \
+    pylint-pytest \
+    pylint-plugin-utils \
+    flaky \
+    s3fs \
+    boto3 \
+    botocore \
+    adlfs \
+    gcsfs \
+    testcontainers \
+    emoji \
+    lxml \
+    openpyxl \
+    xlrd \
+    tables \
+    pyarrow \
+    skl2onnx \
+    "dvc[s3]" \
+    httpx \
+    jupyter \
+    nbconvert \
+    nbloader \
+    pandas \
+    numpy \
+    scikit-learn \
+    scipy \
+    onnx \
+    "onnxruntime" \
+    catboost \
+    xgboost \
+    lightgbm \
+    "fastapi<0.100" \
+    uvicorn \
+    "prometheus-fastapi-instrumentator" \
+    "streamlit<1.28" \
+    streamlit_pydantic \
+    docker \
+    kubernetes \
+    pika \
+    bcrypt \
+    "sshfs[bcrypt]>=2021.11.2" \
+    pygit2 \
+    tomlkit \
+    Pillow \
+    torch \
+    torchvision \
+    tensorflow
+
+# Install the project itself
+RUN pip install --no-cache-dir -e .
+
+# Run the full test suite
+RUN python -m pytest tests/ -q --tb=short

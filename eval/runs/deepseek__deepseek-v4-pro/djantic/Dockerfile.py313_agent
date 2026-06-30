@@ -1,0 +1,21 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install dependencies
+RUN pip install --no-cache-dir \
+    "pydantic>=1.8.2,<2" \
+    "Django>=4.2,<5" \
+    pytest \
+    pytest-django \
+    pytest-cov \
+    factory-boy \
+    psycopg2-binary
+
+# Install the project itself in editable mode
+RUN pip install --no-cache-dir -e .
+
+# Run the full test suite
+RUN DJANGO_SETTINGS_MODULE=tests.testapp.settings python -m pytest tests/ -v --tb=short

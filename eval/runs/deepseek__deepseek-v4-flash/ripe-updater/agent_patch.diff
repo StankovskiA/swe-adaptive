@@ -1,0 +1,34 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..fa3906d
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,14 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY requirements.txt test-requirements.txt ./
++COPY pyproject.toml setup.cfg ./
++COPY ripeupdater/ ./ripeupdater/
++COPY tests/ ./tests/
++COPY templates/ ./templates/
++
++RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
++    pip install --no-cache-dir -r requirements.txt -r test-requirements.txt
++
++RUN python -m pytest tests/ -q
+diff --git a/requirements.txt b/requirements.txt
+index 75802c4..955a39f 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -2,5 +2,6 @@ requests==2.27.1
+ flask==2.1.1
+ iso3166==2.0.2
+ gunicorn==20.1.0
+-boto3==1.21.44
+-pynetbox==6.6.2
+\ No newline at end of file
++boto3==1.26.0
++pynetbox==7.7.0
++werkzeug<3.0

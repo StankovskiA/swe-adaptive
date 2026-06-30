@@ -1,0 +1,29 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies for psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# Install the project with test dependencies
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir \
+    "Django>=5.0,<6.0" \
+    "pydantic>=1.8,<2" \
+    "psycopg2-binary>=2.9.1" \
+    pytest \
+    pytest-django \
+    pytest-cov \
+    factory-boy \
+    "setuptools>=65.5.1"
+
+# Install the project itself
+RUN pip install --no-cache-dir -e .
+
+# Run the test suite
+RUN PYTHONPATH=/app/tests python -m pytest tests/ -v --ds=testapp.settings

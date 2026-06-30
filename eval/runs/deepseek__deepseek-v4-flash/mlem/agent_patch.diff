@@ -1,0 +1,248 @@
+diff --git a/mlem/api/migrations.py b/mlem/api/migrations.py
+index 1553c83..aebf14b 100644
+--- a/mlem/api/migrations.py
++++ b/mlem/api/migrations.py
+@@ -20,7 +20,7 @@ def migrate(path: str, project: Optional[str] = None, recursive: bool = False):
+     except MlemObjectNotFound:
+         pass
+ 
+-    postfix = f"/**{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
++    postfix = f"/**/*{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
+     for filepath in location.fs.glob(
+         location.fullpath + postfix, detail=False
+     ):
+diff --git a/mlem/cli/main.py b/mlem/cli/main.py
+index b8f5e89..48e245a 100644
+--- a/mlem/cli/main.py
++++ b/mlem/cli/main.py
+@@ -75,6 +75,10 @@ class MlemMixin(Command):
+         is_generated_from_ext: bool = False,
+         **kwargs,
+     ):
++        # rich_markup_mode may be passed by typer's get_command_from_info
++        # in newer typer versions; it is handled by typer's command class
++        # but we need to remove it since MlemMixin inherits from click.Command
++        kwargs.pop("rich_markup_mode", None)
+         super().__init__(*args, **kwargs)
+         self.section = section
+         self.aliases = aliases
+diff --git a/mlem/core/artifacts.py b/mlem/core/artifacts.py
+index 991148e..00f643b 100644
+--- a/mlem/core/artifacts.py
++++ b/mlem/core/artifacts.py
+@@ -291,7 +291,7 @@ class LocalStorage(FSSpecStorage):
+         if isinstance(fs, LocalFileSystem):
+             return LocalStorage(uri=self.create_uri(path))
+         protocol = fs.protocol
+-        if isinstance(protocol, list):
++        if isinstance(protocol, (tuple, list)):
+             protocol = protocol[0]
+         storage = FSSpecStorage(uri=f"{protocol}://{path}")
+         storage.fs = fs
+diff --git a/mlem/core/metadata.py b/mlem/core/metadata.py
+index 78d1a9a..c344c02 100644
+--- a/mlem/core/metadata.py
++++ b/mlem/core/metadata.py
+@@ -288,7 +288,7 @@ def list_objects(
+ ) -> Dict[Type[MlemObject], List[MlemObject]]:
+     loc = Location.resolve(path, fs=fs)
+     result = defaultdict(list)
+-    postfix = f"/**{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
++    postfix = f"/**/*{MLEM_EXT}" if recursive else f"/*{MLEM_EXT}"
+     for filepath in loc.fs.glob(loc.fullpath + postfix, detail=False):
+         meta = load_meta(
+             filepath,
+diff --git a/mlem/utils/mlem.isort.cfg b/mlem/utils/mlem.isort.cfg
+index 5111819..06aaa0b 100644
+--- a/mlem/utils/mlem.isort.cfg
++++ b/mlem/utils/mlem.isort.cfg
+@@ -24,5 +24,4 @@ extra_standard_library =
+     pydevd_plugins.extensions.types
+     pydevd_plugins.extensions
+     pydev_ipython.inputhook
+-old_finders = True
+ default_section = FIRSTPARTY
+diff --git a/mlem/utils/module.py b/mlem/utils/module.py
+index 4099cf7..8beec3d 100644
+--- a/mlem/utils/module.py
++++ b/mlem/utils/module.py
+@@ -18,7 +18,7 @@ import dill
+ import requests
+ from dill._dill import TypeType, save_type
+ from importlib_metadata import packages_distributions
+-from isort.deprecated.finders import FindersManager
++from isort import place_module
+ from isort.settings import Config
+ from pydantic.main import ModelMetaclass
+ 
+@@ -133,7 +133,10 @@ def get_object_module(obj: object) -> Optional[ModuleType]:
+ mlem_isort_config = Config(
+     settings_file=os.path.join(os.path.dirname(__file__), "mlem.isort.cfg")
+ )
+-isort_finder = FindersManager(config=mlem_isort_config)
++
++
++def _find_module_section(module_name: str) -> str:
++    return place_module(module_name, config=mlem_isort_config)
+ 
+ 
+ def is_private_module(mod: ModuleType):
+@@ -188,7 +191,7 @@ def is_installable_module(mod: ModuleType):
+     :param mod: module object to use
+     :return: boolean flag
+     """
+-    return isort_finder.find(mod.__name__) == "THIRDPARTY"
++    return _find_module_section(mod.__name__) == "THIRDPARTY"
+ 
+ 
+ @lru_cache()
+@@ -199,7 +202,7 @@ def is_builtin_module(mod: ModuleType):
+     :param mod: module object to use
+     :return: boolean flag
+     """
+-    return isort_finder.find(mod.__name__) == "STDLIB"
++    return _find_module_section(mod.__name__) == "STDLIB"
+ 
+ 
+ def is_mlem_module(mod: ModuleType):
+diff --git a/setup.py b/setup.py
+index 526b335..b289729 100644
+--- a/setup.py
++++ b/setup.py
+@@ -29,7 +29,7 @@ install_requires = [
+ tests = [
+     "pytest",
+     "pytest-cov",
+-    "pytest-lazy-fixture==0.6.3",
++    "pytest-lazy-fixtures>=1.0.0",
+     "pytest-mock",
+     "pylint<2.14",
+     # we use this to suppress pytest-related false positives in our tests.
+@@ -67,8 +67,8 @@ extras = {
+     "scipy": ["scipy"],
+     "onnx": ["onnx"],
+     "onnxruntime": [
+-        "protobuf==3.20.1",
+-        "onnxruntime<1.14",
++        "protobuf>=3.20.1",
++        "onnxruntime",
+     ],  # TODO - see if it can be merged with onnx
+     "catboost": ["catboost"],
+     "xgboost": ["xgboost"],
+diff --git a/tests/api/test_commands.py b/tests/api/test_commands.py
+index f7890c8..57f3d16 100644
+--- a/tests/api/test_commands.py
++++ b/tests/api/test_commands.py
+@@ -5,7 +5,7 @@ import posixpath
+ import pytest
+ from fsspec.implementations.local import LocalFileSystem
+ from numpy import ndarray
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ 
+ from mlem.api import apply, apply_remote, link, load_meta
+ from mlem.api.commands import build, import_object, init, serve
+diff --git a/tests/cli/test_main.py b/tests/cli/test_main.py
+index 2a56602..62f54f4 100644
+--- a/tests/cli/test_main.py
++++ b/tests/cli/test_main.py
+@@ -28,7 +28,7 @@ def app_cli_cmd():
+     ]
+     groups = [
+         get_group_from_info(
+-            g, pretty_exceptions_short=False, rich_markup_mode="rich"
++            g, pretty_exceptions_short=False, suggest_commands=False, rich_markup_mode="rich"
+         )
+         for g in app.registered_groups
+     ]
+diff --git a/tests/contrib/test_bitbucket.py b/tests/contrib/test_bitbucket.py
+index 945332c..d256567 100644
+--- a/tests/contrib/test_bitbucket.py
++++ b/tests/contrib/test_bitbucket.py
+@@ -1,7 +1,7 @@
+ import os
+ 
+ import pytest
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ 
+ from mlem.contrib.bitbucketfs import BitBucketFileSystem, ls_bb_refs
+ from mlem.core.errors import RevisionNotFound
+diff --git a/tests/contrib/test_docker/test_pack.py b/tests/contrib/test_docker/test_pack.py
+index 917dd4c..3b237b9 100644
+--- a/tests/contrib/test_docker/test_pack.py
++++ b/tests/contrib/test_docker/test_pack.py
+@@ -3,7 +3,7 @@ import time
+ 
+ import pytest
+ import requests
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ from testcontainers.general import TestContainer
+ 
+ from mlem.api import build
+diff --git a/tests/contrib/test_numpy.py b/tests/contrib/test_numpy.py
+index 4a66df9..7bd6c38 100644
+--- a/tests/contrib/test_numpy.py
++++ b/tests/contrib/test_numpy.py
+@@ -3,7 +3,7 @@ import re
+ import numpy as np
+ import pytest
+ from pydantic import parse_obj_as
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ 
+ from mlem.contrib.numpy import (
+     NumpyNdarrayType,
+diff --git a/tests/contrib/test_onnx.py b/tests/contrib/test_onnx.py
+index 33a0c16..6e2d4df 100644
+--- a/tests/contrib/test_onnx.py
++++ b/tests/contrib/test_onnx.py
+@@ -2,7 +2,7 @@ import posixpath
+ 
+ import numpy as np
+ import pytest
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ from skl2onnx import convert_sklearn
+ from skl2onnx.common.data_types import Int64TensorType
+ from sklearn.linear_model import LinearRegression, LogisticRegression
+diff --git a/tests/contrib/test_pandas.py b/tests/contrib/test_pandas.py
+index b949efe..513f678 100644
+--- a/tests/contrib/test_pandas.py
++++ b/tests/contrib/test_pandas.py
+@@ -10,7 +10,7 @@ import pandas as pd
+ import pytest
+ from fsspec.implementations.local import LocalFileSystem
+ from pydantic import parse_obj_as
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ from sklearn.datasets import load_iris
+ from sklearn.model_selection import train_test_split
+ 
+diff --git a/tests/core/test_data_type.py b/tests/core/test_data_type.py
+index f0aa85a..f2b0853 100644
+--- a/tests/core/test_data_type.py
++++ b/tests/core/test_data_type.py
+@@ -3,7 +3,7 @@ import copy
+ import numpy as np
+ import pytest
+ from pydantic import parse_obj_as
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ 
+ from mlem.core.artifacts import Artifact
+ from mlem.core.base import load_impl_ext
+diff --git a/tests/core/test_metadata.py b/tests/core/test_metadata.py
+index 37bf0df..8b7adb9 100644
+--- a/tests/core/test_metadata.py
++++ b/tests/core/test_metadata.py
+@@ -10,7 +10,7 @@ from urllib.parse import quote_plus
+ import pytest
+ import yaml
+ from git import Repo
+-from pytest_lazyfixture import lazy_fixture
++from pytest_lazy_fixtures import lf as lazy_fixture
+ from sklearn.datasets import load_iris
+ from sklearn.ensemble import RandomForestClassifier
+ from sklearn.tree import DecisionTreeClassifier

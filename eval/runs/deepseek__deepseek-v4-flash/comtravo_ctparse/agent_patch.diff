@@ -1,0 +1,29 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..afcb862
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,12 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++RUN pip install --no-cache-dir --upgrade pip \
++    && pip install --no-cache-dir -r requirements.txt -r requirements_dev.txt \
++    && pip install --no-cache-dir -e . \
++    && pip install --no-cache-dir pytest
++
++RUN python -m pytest tests/ -v -q
+diff --git a/requirements_dev.txt b/requirements_dev.txt
+index 9472083..441c917 100644
+--- a/requirements_dev.txt
++++ b/requirements_dev.txt
+@@ -1,5 +1,5 @@
+ bumpver>=2022.1118
+-watchdog>=0.10.2,<1.0.0
++watchdog>=2.0.0,<7.0.0
+ flake8>=4.0.0,<5.0.0
+ flake8-bugbear>=22.0.0,<23.0.0
+ coverage>=6.0,<7.0

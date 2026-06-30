@@ -1,0 +1,173 @@
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif.py
+index ef2d94b..bec66f5 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif.py
+@@ -7,7 +7,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ from .exif_be import ExifBe
+ from .exif_le import ExifLe
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_be.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_be.py
+index 907c854..a4e43f5 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_be.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_be.py
+@@ -4,7 +4,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_le.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_le.py
+index 15be43d..3c14aa7 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_le.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/exif_le.py
+@@ -4,7 +4,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/gif.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/gif.py
+index c492deb..76c6653 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/gif.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/gif.py
+@@ -7,7 +7,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/google_protobuf.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/google_protobuf.py
+index 853baea..abc0f3d 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/google_protobuf.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/google_protobuf.py
+@@ -4,7 +4,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ from .vlq_base128_le import VlqBase128Le
+ 
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/ico.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/ico.py
+index e27195b..6fc7dfb 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/ico.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/ico.py
+@@ -4,7 +4,7 @@ import struct
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/jpeg.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/jpeg.py
+index 37325c9..e7954f6 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/jpeg.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/jpeg.py
+@@ -7,7 +7,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ from .exif import Exif
+ 
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/png.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/png.py
+index 7415772..8da8110 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/png.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/png.py
+@@ -7,7 +7,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/tls_client_hello.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/tls_client_hello.py
+index 5498611..d48680e 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/tls_client_hello.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/tls_client_hello.py
+@@ -7,7 +7,7 @@ from enum import Enum
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/vlq_base128_le.py b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/vlq_base128_le.py
+index 05fd267..ddf7286 100644
+--- a/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/vlq_base128_le.py
++++ b/seleniumwire/thirdparty/mitmproxy/contrib/kaitaistruct/vlq_base128_le.py
+@@ -2,7 +2,7 @@
+ 
+ from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
+ from kaitaistruct import __version__ as ks_version
+-from pkg_resources import parse_version
++from packaging.version import parse as parse_version
+ 
+ if parse_version(ks_version) < parse_version('0.7'):
+     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
+diff --git a/seleniumwire/thirdparty/mitmproxy/optmanager.py b/seleniumwire/thirdparty/mitmproxy/optmanager.py
+index 4fc37e4..fa7507f 100644
+--- a/seleniumwire/thirdparty/mitmproxy/optmanager.py
++++ b/seleniumwire/thirdparty/mitmproxy/optmanager.py
+@@ -6,7 +6,7 @@ import textwrap
+ import typing
+ 
+ import blinker
+-import blinker._saferef
++import weakref
+ 
+ from seleniumwire.thirdparty.mitmproxy import exceptions
+ from seleniumwire.thirdparty.mitmproxy.utils import typecheck
+@@ -135,7 +135,7 @@ class OptManager:
+ 
+         # We reuse blinker's safe reference functionality to cope with weakrefs
+         # to bound methods.
+-        func = blinker._saferef.safe_ref(func)
++        func = weakref.ref(func)
+ 
+         @functools.wraps(func)
+         def _call(options, updated):
+diff --git a/setup.py b/setup.py
+index ac0d829..665a816 100644
+--- a/setup.py
++++ b/setup.py
+@@ -39,6 +39,7 @@ setup(
+         "h2>=4.0; python_version>='3.6.0'",
+         "hyperframe>=6.0; python_version>='3.6.0'",
+         'kaitaistruct>=0.7',
++        'packaging>=20.0',
+         'pyasn1>=0.3.1',
+         'pyOpenSSL>=22.0.0',
+         'pyparsing>=2.4.2',
+@@ -69,7 +70,7 @@ setup(
+             'pytest-cov',
+             'tox',
+             'twine',
+-            'werkzeug==2.0.3',
++            'werkzeug>=2.0.3',
+             'wheel',
+         ],
+     },

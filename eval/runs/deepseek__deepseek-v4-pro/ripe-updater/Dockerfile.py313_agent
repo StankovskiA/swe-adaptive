@@ -1,0 +1,10 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements.txt test-requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -r test-requirements.txt
+
+COPY . /app
+
+RUN python -m pytest tests/ -v

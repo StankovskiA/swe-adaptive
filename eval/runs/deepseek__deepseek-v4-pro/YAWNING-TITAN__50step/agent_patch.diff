@@ -1,0 +1,11 @@
+diff --git a/.gitignore b/.gitignore
+index b68d1bad..efaff26e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -37,3 +37,5 @@ docs/_build
+ # Remove tensorboard logs starting with ppo-
+ ppo-*/
+ **.pkl
++
++.venv*
+\ No newline at end of file

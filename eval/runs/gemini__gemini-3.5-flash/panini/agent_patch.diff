@@ -1,0 +1,40 @@
+diff --git a/pytest.ini b/pytest.ini
+index be46033..51c95b2 100644
+--- a/pytest.ini
++++ b/pytest.ini
+@@ -1,4 +1,5 @@
+ [pytest]
+ log_cli = true
++asyncio_mode = auto
+ filterwarnings =
+-    ignore::DeprecationWarning
+\ No newline at end of file
++    ignore::DeprecationWarning
+diff --git a/requirements/defaults.txt b/requirements/defaults.txt
+index 5b2c875..0f26ec7 100644
+--- a/requirements/defaults.txt
++++ b/requirements/defaults.txt
+@@ -1,16 +1,16 @@
+-aiohttp==3.8.1
++aiohttp>=3.10.11
+ aiohttp-cors==0.7.0
+-async-timeout==4.0.0
++async-timeout>=4.0.2
+ requests==2.31.0
+ six==1.16.0
+ nats-py==2.6.0
+ nats-python==0.8.0
+-nest-asyncio==1.5.1
+-pytest==6.2.5
+-pytest-asyncio==0.17.2
+-pydantic==1.10.2
++nest-asyncio>=1.6.0
++pytest>=8.3.4
++pytest-asyncio>=0.24.0
++pydantic>=1.10.21
+ prometheus-client==0.9.0
+ python-json-logger==2.0.1
+-yarl==1.7.2
++yarl>=1.15.2
+ ujson==5.4.0
+ websocket-client==1.2.3

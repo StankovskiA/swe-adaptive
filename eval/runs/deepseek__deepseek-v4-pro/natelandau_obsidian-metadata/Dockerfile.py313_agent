@@ -1,0 +1,18 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies needed for building wheels (if any)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy project files
+COPY . /app
+
+# Install the project and all dependencies
+RUN pip install --no-cache-dir -e . && \
+    pip install --no-cache-dir pytest pytest-mock pytest-clarity pytest-xdist pytest-pretty-terminal
+
+# Run the full test suite
+RUN python -m pytest tests/ -q

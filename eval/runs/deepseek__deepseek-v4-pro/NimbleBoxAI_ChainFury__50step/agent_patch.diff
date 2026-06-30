@@ -1,0 +1,26 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 05bedbe..c5f6a9d 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,7 +8,7 @@ readme = "README.md"
+ repository = "https://github.com/NimbleBoxAI/ChainFury"
+ 
+ [tool.poetry.dependencies]
+-python = "^3.9,<3.12"
++python = "^3.9,<3.14"
+ tuneapi = "0.1.1"
+ fire = "0.5.0"
+ Jinja2 = "3.1.2"
+diff --git a/server/pyproject.toml b/server/pyproject.toml
+index dc1342e..e8165b1 100644
+--- a/server/pyproject.toml
++++ b/server/pyproject.toml
+@@ -11,7 +11,7 @@ repository = "https://github.com/NimbleBoxAI/ChainFury"
+ include = ["chainfury_server/static/*", "chainfury_server/static/*/*"]
+ 
+ [tool.poetry.dependencies]
+-python = ">=3.9,<3.12"
++python = ">=3.9,<3.14"
+ black = "23.3.0"
+ fastapi = "^0.109.2"
+ fire = "0.5.0"

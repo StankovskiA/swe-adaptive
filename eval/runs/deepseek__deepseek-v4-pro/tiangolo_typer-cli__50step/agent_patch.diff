@@ -1,0 +1,29 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..2209b11
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,10 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++RUN pip install --upgrade pip setuptools
++RUN pip install -r requirements.txt
++
++RUN pytest tests/ -v
+diff --git a/requirements.txt b/requirements.txt
+index 89c3c40..7e92f3f 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -5,7 +5,7 @@
+ pytest == 7.0.1
+ pytest-cov == 4.0.0
+ pytest-xdist == 2.1.0
+-pytest-sugar == 0.9.2
++pytest-sugar >= 0.9.5
+ 
+ # Format and lint
+ black == 22.3

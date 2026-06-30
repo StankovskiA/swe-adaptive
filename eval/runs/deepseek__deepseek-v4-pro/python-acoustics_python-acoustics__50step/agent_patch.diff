@@ -1,0 +1,33 @@
+diff --git a/acoustics/directivity.py b/acoustics/directivity.py
+index 42528cf..3ac6694 100644
+--- a/acoustics/directivity.py
++++ b/acoustics/directivity.py
+@@ -17,7 +17,18 @@ from matplotlib.colors import Normalize
+ from mpl_toolkits.mplot3d import Axes3D
+ import numpy as np
+ from scipy.interpolate import interp2d as interpolate
+-from scipy.special import sph_harm  # pylint: disable=no-name-in-module
++try:
++    from scipy.special import sph_harm_y as _sph_harm
++
++    def _spherical_harmonic(m, n, theta, phi):
++        """Wrapper for scipy.special.sph_harm_y to maintain backward compatibility."""
++        return _sph_harm(n, m, phi, theta)
++except ImportError:
++    from scipy.special import sph_harm as _sph_harm  # pylint: disable=no-name-in-module
++
++    def _spherical_harmonic(m, n, theta, phi):
++        """Wrapper for scipy.special.sph_harm to maintain backward compatibility."""
++        return _sph_harm(m, n, phi, theta)
+ 
+ 
+ def cardioid(theta, a=1.0, k=1.0):
+@@ -49,7 +60,7 @@ def spherical_harmonic(theta, phi, m=0, n=0):
+     .. seealso:: :func:`scipy.special.sph_harm`
+ 
+     """
+-    return sph_harm(m, n, phi, theta).real
++    return _spherical_harmonic(m, n, theta, phi).real
+ 
+ 
+ def spherical_to_cartesian(r, theta, phi):

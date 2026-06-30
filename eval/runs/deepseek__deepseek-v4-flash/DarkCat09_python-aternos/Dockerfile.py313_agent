@@ -1,0 +1,17 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY . /app
+
+# Install build dependencies for regex and other packages that need compilation
+RUN pip install --no-cache-dir --upgrade pip
+
+# Install the project and its dependencies
+RUN pip install --no-cache-dir -e .
+
+# Install test dependencies
+RUN pip install --no-cache-dir requests-mock
+
+# Run the full test suite
+RUN python -m unittest discover -v ./tests

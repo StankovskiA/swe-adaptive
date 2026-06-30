@@ -1,0 +1,68 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..6924b44
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,24 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++# Install NATS server
++RUN apt-get update && \
++    apt-get install -y --no-install-recommends curl ca-certificates && \
++    curl -L -o /tmp/nats-server.tar.gz https://github.com/nats-io/nats-server/releases/download/v2.10.18/nats-server-v2.10.18-linux-amd64.tar.gz && \
++    tar xzf /tmp/nats-server.tar.gz -C /tmp && \
++    mv /tmp/nats-server-v2.10.18-linux-amd64/nats-server /usr/local/bin/ && \
++    rm -rf /tmp/nats-server* && \
++    apt-get remove -y curl && \
++    apt-get autoremove -y && \
++    rm -rf /var/lib/apt/lists/*
++
++COPY . /app
++
++RUN pip install -r requirements/defaults.txt
++RUN pip install -e .
++
++# Start NATS server in background and run tests
++RUN nats-server -p 4222 & \
++    sleep 2 && \
++    python -m pytest tests/ -q
+diff --git a/requirements/defaults.txt b/requirements/defaults.txt
+index 5b2c875..191f375 100644
+--- a/requirements/defaults.txt
++++ b/requirements/defaults.txt
+@@ -1,4 +1,4 @@
+-aiohttp==3.8.1
++aiohttp>=3.9.0
+ aiohttp-cors==0.7.0
+ async-timeout==4.0.0
+ requests==2.31.0
+@@ -11,6 +11,7 @@ pytest-asyncio==0.17.2
+ pydantic==1.10.2
+ prometheus-client==0.9.0
+ python-json-logger==2.0.1
+-yarl==1.7.2
++yarl>=1.9.3
+ ujson==5.4.0
+ websocket-client==1.2.3
++setuptools<82
+diff --git a/setup.py b/setup.py
+index e965f14..218e22e 100644
+--- a/setup.py
++++ b/setup.py
+@@ -62,12 +62,13 @@ setup(
+         "websocket-client>=1.2.3",
+         "requests>=2.31.0",
+         "six>=1.15.0",
+-        "yarl>=1.6.1",
++        "yarl>=1.9.3",
+         "python-json-logger>=2.0.1",
+         "nest-asyncio==1.5.1",
+         "prometheus-client==0.9.0",
+         "nats-python>=0.8.0",
+         "ujson==5.4.0",
++        "setuptools<82",
+     ],
+     keywords=[
+         "nats",

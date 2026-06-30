@@ -1,0 +1,19 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Create a fresh virtual environment and add to PATH to isolate dependencies
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade standard packaging tools inside the virtual environment
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Copy the repository contents
+COPY . /app
+
+# Install the project and its dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Run the full test suite using RUN so failures break the build
+RUN pytest tests/ -v

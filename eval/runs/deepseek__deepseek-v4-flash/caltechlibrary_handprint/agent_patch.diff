@@ -1,0 +1,67 @@
+diff --git a/Dockerfile.py313 b/Dockerfile.py313
+new file mode 100644
+index 0000000..710618e
+--- /dev/null
++++ b/Dockerfile.py313
+@@ -0,0 +1,20 @@
++FROM python:3.13-slim
++
++WORKDIR /app
++
++COPY . /app
++
++# Install system build dependencies needed for compiling some Python packages
++RUN apt-get update && apt-get install -y --no-install-recommends \
++    gcc \
++    build-essential \
++    && rm -rf /var/lib/apt/lists/*
++
++# Upgrade pip and install dependencies
++RUN pip install --no-cache-dir --upgrade pip \
++    && pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt \
++    && pip install --no-cache-dir -e . \
++    && pip install --no-cache-dir pytest
++
++# Run the test suite
++RUN python -m pytest tests/ -v
+diff --git a/handprint/comparison.py b/handprint/comparison.py
+index 140080c..e36f731 100644
+--- a/handprint/comparison.py
++++ b/handprint/comparison.py
+@@ -179,8 +179,8 @@ def line_data(gt_line, htr_line, htr_index):
+     # The stringdist package definition of levenshtein_norm() divides
+     # by the longest of the two strings, but it is more conventional in
+     # OCR papers and software to divide by the length of the reference.
+-    from stringdist import levenshtein
+-    distance = levenshtein(expected, obtained)
++    from textdistance import levenshtein
++    distance = int(levenshtein(expected, obtained))
+     if len(expected) > 0:
+         cer = '{:.2f}'.format(100 * float(distance)/len(expected))
+     else:
+diff --git a/requirements.txt b/requirements.txt
+index b9d48db..697d2d7 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -20,15 +20,15 @@ google-auth-httplib2     == 0.1.0
+ google-cloud             == 0.34.0
+ google-cloud-vision      == 2.3.1
+ googleapis-common-protos == 1.53.0
+-grpcio                   == 1.44.0
++grpcio                   >= 1.67.0
+ humanize                 >= 3.7.1
+ imagesize                == 1.2.0
+-matplotlib               == 3.4.2
+-numpy                    == 1.22.2
+-Pillow                   == 9.0.1
+-plac                     == 1.3.4
++matplotlib               >= 3.5.0
++numpy                    >= 2.1.0
++Pillow                   >= 10.4.0
++plac                     >= 1.4.0
+ psutil                   == 5.8.0
+-PyMuPDF                  == 1.19.6
++PyMuPDF                  >= 1.24.11
+ requests                 == 2.25.0
+ rich                     == 12.0.1
+ setuptools               >= 62.1.0

@@ -1,0 +1,22 @@
+{
+  "instance_id": "tudorelu_pyjuque",
+  "model": "gemini/gemini-3.5-flash",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/tudorelu_pyjuque/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/gemini__gemini-3.5-flash/tudorelu_pyjuque/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 44,
+  "patch_lines_removed": 18,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "pyjuque/Bot.py",
+    "requirements.txt",
+    "setup.py",
+    "tests/test_BotController.py"
+  ],
+  "error": null,
+  "scored_at": "2026-06-14T13:16:01.346761+00:00"
+}

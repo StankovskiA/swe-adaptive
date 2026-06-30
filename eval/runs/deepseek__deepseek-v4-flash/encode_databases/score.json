@@ -1,0 +1,19 @@
+{
+  "instance_id": "encode_databases",
+  "model": "deepseek/deepseek-v4-flash",
+  "resolved": true,
+  "scoring_error": false,
+  "dockerfile_generated": true,
+  "agent_dockerfile_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-flash/encode_databases/Dockerfile.py313_agent",
+  "docker_exit_code": 0,
+  "docker_build_log_path": "/swe_adaptive/swe_adaptive_eval/runs/deepseek__deepseek-v4-flash/encode_databases/docker_build.log",
+  "patch_empty": false,
+  "patch_lines_added": 21,
+  "patch_lines_removed": 2,
+  "patch_files_changed": [
+    "Dockerfile.py313",
+    "requirements.txt"
+  ],
+  "error": null,
+  "scored_at": "2026-06-13T09:44:20.189763+00:00"
+}
