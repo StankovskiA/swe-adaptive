@@ -34,10 +34,7 @@ that fails under Python 3.13, restore it to a fully passing state.
 swe-adaptive/
 ├── instances/       # Benchmark instances (Dockerfile.test, Dockerfile.py313, BENCHMARK.md)
 ├── construction/    # Dataset construction pipeline (scraper + auto_benchmark)
-├── eval/            # Evaluation harness (run_eval.py, score_instance.py, etc.)
-├── results/         # Evaluation results (summary.md, summary.csv)
-├── trajectories/    # Agent trajectories from dataset validation experiments
-└── paper/           # Paper PDF (after acceptance)
+└──  eval/            # Evaluation harness (run_eval.py, score_instance.py, results, etc.)
 ```
 
 ## Installation
