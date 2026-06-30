@@ -2,16 +2,28 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
 .venv/
 venv/
 env/
 
-# Evaluation run artifacts (logs, large files)
-eval/runs/**/*.log
-eval/runs/**/combined.log
-eval/runs/**/stdout.log
-eval/runs/**/stderr.log
+# Runtime artifacts from construction pipeline
+construction/*.json
+construction/*.log
+construction/rejected_cache.json
+construction/processed_repos.json
 
-# Temporary / build
-*.tmp
+# Evaluation run artifacts
+eval/runs/
+eval/*.log
+
+# OS
 .DS_Store
+Thumbs.db

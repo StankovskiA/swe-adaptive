@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "SWE-Adaptive: A Benchmark Dataset for Agentic Adaptive Maintenance of Python Projects"
+version: 1.0.0
+date-released: "2027-01-01"
+doi: PLACEHOLDER_DOI
+url: "https://github.com/ANONYMOUS/swe-adaptive"
+repository-code: "https://github.com/ANONYMOUS/swe-adaptive"
+license: MIT
+abstract: >
+  SWE-Adaptive is a benchmark dataset operationalising adaptive maintenance
+  as a reproducible, automatically scorable task. Given an archived Python
+  repository that fails under Python 3.13, the task is to restore it to a
+  fully passing state. The dataset contains 125 verified instances spanning
+  6 breaking-change categories, constructed from 13,469 queried
+  archived Python repositories.
+keywords:
+  - software maintenance
+  - adaptive maintenance
+  - benchmark dataset
+  - large language models
+  - agentic AI
+  - Python migration
+  - abandoned software
+  - dependency management
+authors:
+  - family-names: "ANONYMOUS"
+    given-names: "ANONYMOUS"
+    orcid: "https://orcid.org/PLACEHOLDER"
+    affiliation: "ANONYMOUS University"
+  - family-names: "ANONYMOUS"
+    given-names: "ANONYMOUS"
+    orcid: "https://orcid.org/PLACEHOLDER"
+    affiliation: "ANONYMOUS University"
+preferred-citation:
+  type: conference-paper
+  title: "SWE-Adaptive: A Benchmark Dataset for Agentic Adaptive Maintenance of Python Projects"
+  authors:
+    - family-names: "ANONYMOUS"
+      given-names: "ANONYMOUS"
+  collection-title: "Proceedings of the International Conference on Software Engineering (ICSE)"
+  year: 2027
+  doi: PLACEHOLDER_DOI

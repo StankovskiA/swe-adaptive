@@ -1,0 +1,78 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "SWE-Adaptive",
+  "version": "1.0.0",
+  "description": "A benchmark dataset for agentic adaptive maintenance of Python projects. Contains 125 verified instances of archived Python repositories that fail under Python 3.13, each with a verified baseline and a confirmed failure, automatically scorable via Docker build exit codes.",
+  "dateCreated": "2026-06-01",
+  "datePublished": "2027-01-01",
+  "url": "https://github.com/ANONYMOUS/swe-adaptive",
+  "downloadUrl": "https://github.com/ANONYMOUS/swe-adaptive/releases",
+  "identifier": "PLACEHOLDER_DOI",
+  "license": "https://spdx.org/licenses/MIT.html",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Python",
+      "version": "3.8+"
+    }
+  ],
+  "keywords": [
+    "software maintenance",
+    "adaptive maintenance",
+    "benchmark dataset",
+    "large language models",
+    "agentic AI",
+    "Python migration",
+    "abandoned software",
+    "dependency management"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "ANONYMOUS",
+      "familyName": "ANONYMOUS",
+      "@id": "https://orcid.org/PLACEHOLDER",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "ANONYMOUS University"
+      },
+      "roleName": "Researcher"
+    },
+    {
+      "@type": "Person",
+      "givenName": "ANONYMOUS",
+      "familyName": "ANONYMOUS",
+      "@id": "https://orcid.org/PLACEHOLDER",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "ANONYMOUS University"
+      },
+      "roleName": "Supervisor"
+    }
+  ],
+  "contributor": [],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "ANONYMOUS",
+      "familyName": "ANONYMOUS",
+      "email": "ANONYMOUS@ANONYMOUS.edu"
+    }
+  ],
+  "softwareRequirements": [
+    "Python >= 3.8",
+    "Docker >= 20.0",
+    "Git >= 2.0"
+  ],
+  "referencePublication": {
+    "@type": "ScholarlyArticle",
+    "name": "SWE-Adaptive: A Benchmark Dataset for Agentic Adaptive Maintenance of Python Projects",
+    "author": "Anonymous",
+    "datePublished": "2027",
+    "identifier": "PLACEHOLDER_DOI"
+  },
+  "issueTracker": "https://github.com/ANONYMOUS/swe-adaptive/issues",
+  "readme": "https://github.com/ANONYMOUS/swe-adaptive/blob/main/README.md",
+  "contIntegration": "https://github.com/ANONYMOUS/swe-adaptive/actions"
+}
