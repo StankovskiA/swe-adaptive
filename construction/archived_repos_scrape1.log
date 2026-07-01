@@ -1,0 +1,169 @@
+2026-06-11 17:25:23,405 [INFO] ============================================================
+2026-06-11 17:25:23,405 [INFO] SWE-Adaptive: Finding archived repos (2023-2024)
+2026-06-11 17:25:23,405 [INFO] Stars: 50–5000
+2026-06-11 17:25:23,405 [INFO] Target: 200 valid repos
+2026-06-11 17:25:23,405 [INFO] Require Docker: False
+2026-06-11 17:25:23,405 [INFO] Require Python 3.10: False
+2026-06-11 17:25:23,405 [INFO] ============================================================
+2026-06-11 17:25:23,406 [INFO] Loaded rejected cache: 392 repos to skip
+2026-06-11 17:25:23,416 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 language:Python star...
+2026-06-11 17:25:37,527 [INFO]   ✓ pachyderm/python-pachyderm ★88 score=83 py=? tests=15 docker=yes
+2026-06-11 17:25:45,847 [INFO]   ✓ encode/databases ★4002 score=63 py=>=3.8 tests=5 docker=no
+2026-06-11 17:25:54,199 [INFO]   ✓ dstl/YAWNING-TITAN ★68 score=95 py=>=3.8, <3.11 tests=4 docker=yes
+2026-06-11 17:26:02,389 [INFO]   ✓ datafold/data-diff ★2989 score=95 py=? tests=20 docker=yes
+2026-06-11 17:26:14,451 [INFO]   ✓ sassoftware/epdb ★76 score=48 py=? tests=3 docker=no
+2026-06-11 17:26:23,739 [INFO]   ✓ Nukesor/sticker-finder ★100 score=54 py=? tests=3 docker=no
+2026-06-11 17:26:35,836 [INFO]   ✓ uezo/aiproxy ★57 score=33 py=? tests=3 docker=no
+2026-06-11 17:26:44,638 [INFO]   ✓ tensorflow/similarity ★1024 score=65 py=? tests=8 docker=no
+2026-06-11 17:26:55,050 [INFO]   ✓ GoogleCloudPlatform/dataflow-geobeam ★87 score=56 py=>=3.8 tests=4 docker=yes
+2026-06-11 17:27:03,524 [INFO]   ✓ thirdweb-dev/python-sdk ★100 score=67 py=? tests=14 docker=no
+2026-06-11 17:27:12,256 [INFO]   ✓ google/importlab ★179 score=52 py=? tests=7 docker=no
+2026-06-11 17:27:20,814 [INFO]   ✓ litl/backoff ★2697 score=68 py=? tests=8 docker=no
+2026-06-11 17:27:33,086 [INFO]   ✓ google-coral/pycoral ★406 score=58 py=>=3.5.2 tests=10 docker=no
+2026-06-11 17:27:42,446 [INFO]   ✓ lwinterface/panini ★93 score=75 py=>=3.8.3 tests=28 docker=no
+2026-06-11 17:27:51,493 [INFO]   ✓ mixmoe/HibiAPI ★579 score=100 py=>=3.9,<4.0 tests=10 docker=yes
+2026-06-11 17:27:58,946 [INFO]   ✓ SebRut/pygrocy ★69 score=68 py=? tests=17 docker=no
+2026-06-11 17:28:09,495 [INFO]   ✓ borisrozumnuk/cognitojwt ★73 score=43 py=? tests=3 docker=no
+2026-06-11 17:28:18,973 [INFO]   ✓ Qiskit/qiskit-ibm-provider ★86 score=73 py=>=3.8 tests=10 docker=no
+2026-06-11 17:28:28,220 [INFO]   ✓ python-consul/python-consul ★459 score=60 py=? tests=5 docker=no
+2026-06-11 17:28:39,114 [INFO]   ✓ MantisAI/hugie ★65 score=60 py=>= 3.6 tests=6 docker=no
+2026-06-11 17:28:48,354 [INFO]   ✓ gak/pycallgraph ★1867 score=66 py=? tests=13 docker=no
+2026-06-11 17:28:56,765 [INFO]   ✓ tiangolo/typer-cli ★374 score=72 py=>=3.7 tests=15 docker=no
+2026-06-11 17:29:06,759 [INFO]   ✓ google/python-adb ★1859 score=58 py=? tests=3 docker=no
+2026-06-11 17:29:20,384 [INFO]   ✓ NimbleBoxAI/ChainFury ★449 score=72 py=? tests=4 docker=yes
+2026-06-11 17:29:30,205 [INFO]   ✓ natelandau/obsidian-metadata ★152 score=74 py=? tests=10 docker=no
+2026-06-11 17:29:46,109 [INFO]   ✓ redis-collections/redis-collections ★116 score=64 py=>=3.8 tests=6 docker=no
+2026-06-11 17:29:53,701 [INFO]   ✓ AngellusMortis/django_microsoft_auth ★138 score=74 py=>=3.8 tests=9 docker=no
+2026-06-11 17:30:03,053 [INFO]   ✓ DeepRank/Deeprank-GNN ★122 score=52 py=? tests=9 docker=no
+2026-06-11 17:30:17,395 [INFO]   ✓ thomasgermain/pymultiMATIC ★56 score=53 py=? tests=20 docker=no
+2026-06-11 17:30:29,986 [INFO]   ✓ code-specialist/fastapi-keycloak ★201 score=62 py=>=3.8 tests=3 docker=no
+2026-06-11 17:30:44,524 [INFO]   ✓ jordaneremieff/djantic ★469 score=72 py=>=3.7 tests=7 docker=no
+2026-06-11 17:30:55,727 [INFO]   ✓ facebookresearch/MODel_opt ★122 score=52 py=>=3.6 tests=19 docker=no
+2026-06-11 17:31:06,575 [INFO]   ✓ mre/timelapse ★212 score=60 py=? tests=3 docker=no
+2026-06-11 17:31:16,131 [INFO]   ✓ P1sec/pycrate ★405 score=60 py=? tests=15 docker=no
+2026-06-11 17:31:30,402 [INFO]   ✓ lk-geimfari/mimesis-factory ★53 score=55 py=? tests=5 docker=no
+2026-06-11 17:31:42,569 [INFO]   ✓ FoundationVision/VNext ★616 score=58 py=>=3.6 tests=12 docker=no
+2026-06-11 17:31:51,582 [INFO]   ✓ pokerregion/poker ★354 score=58 py=? tests=9 docker=no
+2026-06-11 17:32:00,186 [INFO]   ✓ deadc0de6/catcli ★196 score=52 py=? tests=9 docker=no
+2026-06-11 17:32:12,402 [INFO]   ✓ DarkCat09/python-aternos ★89 score=53 py=>=3.7 tests=7 docker=no
+2026-06-11 17:32:23,489 [INFO]   ✓ google-research/fast-soft-sort ★626 score=48 py=? tests=5 docker=no
+2026-06-11 17:32:32,595 [INFO]   ✓ nats-io/stan.py ★113 score=47 py=? tests=3 docker=no
+2026-06-11 17:32:42,490 [INFO]   ✓ spacether/pycalculix ★185 score=45 py=>=3 tests=3 docker=no
+2026-06-11 17:34:06,312 [INFO]   ✓ sashgorokhov/python-telegram-handler ★90 score=58 py=? tests=3 docker=no
+2026-06-11 17:34:26,305 [INFO]   ✓ fcakyon/ultralyticsplus ★88 score=48 py=>=3.7 tests=3 docker=no
+2026-06-11 17:34:47,538 [INFO]   ✓ facebookresearch/esm ★4117 score=55 py=? tests=5 docker=no
+2026-06-11 17:39:32,940 [INFO]   ✓ Breakend/experiment-impact-tracker ★293 score=55 py=? tests=9 docker=no
+2026-06-11 17:39:50,840 [INFO]   ✓ viddexa/autollm ★1004 score=63 py=>=3.8 tests=5 docker=no
+2026-06-11 17:40:32,292 [INFO]   ✓ google/objax ★773 score=63 py=? tests=30 docker=no
+2026-06-11 17:41:35,548 [INFO]   ✓ hyperonym/basaran ★1287 score=76 py=>=3.8.0 tests=3 docker=yes
+2026-06-11 17:42:04,169 [INFO]   ✓ Nukesor/ultimate-poll-bot ★146 score=54 py=? tests=4 docker=no
+2026-06-11 17:44:48,042 [INFO]   ✓ openedx-unsupported/bok-choy ★67 score=71 py=? tests=18 docker=no
+2026-06-11 17:46:40,844 [INFO]   ✓ horazont/aioxmpp ★216 score=68 py=? tests=30 docker=no
+2026-06-11 17:48:14,036 [INFO]   ✓ socialpoint-labs/sqlbucket ★74 score=88 py=>=3.10 tests=7 docker=no
+2026-06-11 17:48:25,092 [INFO]   ✓ poezio/poezio ★51 score=71 py=? tests=11 docker=yes
+2026-06-11 17:50:06,898 [INFO]   ✓ uber/tchannel-python ★75 score=71 py=? tests=27 docker=no
+2026-06-11 17:50:28,652 [INFO]   ✓ tokern/piicatcher ★345 score=62 py=? tests=7 docker=no
+2026-06-11 17:51:16,240 [INFO]   ✓ YelpArchive/clusterman ★291 score=90 py=? tests=4 docker=yes
+2026-06-11 17:51:46,520 [INFO]   ✓ wkeeling/selenium-wire ★1973 score=70 py=>=3.6 tests=3 docker=no
+2026-06-11 17:51:54,734 [INFO]   ✓ deployradiant/pychatml ★55 score=43 py=? tests=4 docker=no
+2026-06-11 17:52:12,531 [INFO]   ✓ vhf/confusable_homoglyphs ★164 score=55 py=? tests=3 docker=no
+2026-06-11 17:53:25,054 [INFO]   ✓ microsoft/KID ★70 score=51 py=>=3.6 tests=4 docker=no
+2026-06-11 17:55:52,160 [INFO]   ✓ deepset-ai/FARM ★1753 score=93 py=>=3.6.0 tests=21 docker=yes
+2026-06-11 17:57:05,511 [INFO]   ✓ google/microscopeimagequality ★92 score=43 py=<3.8 tests=7 docker=no
+2026-06-11 17:57:56,253 [INFO]   ✓ fracdiff/fracdiff ★339 score=60 py=? tests=4 docker=no
+2026-06-11 17:58:36,618 [INFO]   ✓ 0xSpaceShard/starknet-devnet-deprecated ★210 score=92 py=? tests=39 docker=yes
+2026-06-11 18:00:09,950 [INFO]   ✓ googlefonts/fontdiffenator ★87 score=48 py=? tests=5 docker=no
+2026-06-11 18:00:21,004 [INFO]   ✓ boschresearch/pcg_gazebo ★74 score=68 py=? tests=33 docker=yes
+2026-06-11 18:01:40,277 [INFO]   ✓ gtaylor/python-colormath ★474 score=60 py=? tests=5 docker=no
+2026-06-11 18:03:20,334 [INFO]   ✓ erdewit/eventkit ★148 score=52 py=? tests=7 docker=no
+2026-06-11 18:03:59,055 [INFO]   ✓ python-acoustics/python-acoustics ★560 score=78 py=>=3.6 tests=19 docker=no
+2026-06-11 18:07:12,981 [INFO]   ✓ Trainy-ai/llm-atc ★91 score=50 py=? tests=4 docker=no
+2026-06-11 18:07:44,134 [INFO]   ✓ OpenZeppelin/nile ★314 score=97 py=>=3.8,<3.10 tests=6 docker=no
+2026-06-11 18:08:45,932 [INFO]   ✓ interdotlink/ripe-updater ★63 score=70 py=? tests=3 docker=yes
+2026-06-11 18:09:58,090 [INFO]   ✓ DeepRank/deeprank ★147 score=52 py=? tests=6 docker=no
+2026-06-11 18:10:59,137 [INFO]   ✓ ianhco/Pyot ★97 score=53 py=? tests=10 docker=no
+2026-06-11 18:11:17,488 [INFO]   ✓ facebookresearch/how-to-autorl ★88 score=63 py=>=3.9 tests=6 docker=no
+2026-06-11 18:11:38,479 [INFO]   ✓ kushalkolar/MESmerize ★62 score=48 py=>=3.8 tests=11 docker=no
+2026-06-11 18:13:36,982 [WARNING] Rate limit low (22). Sleeping 60s...
+2026-06-11 18:14:37,680 [WARNING] Rate limit low (22). Sleeping 60s...
+2026-06-11 18:15:48,563 [WARNING] Rate limit low (1). Sleeping 60s...
+2026-06-11 18:16:48,804 [INFO] Request GET /repos/rhasspy/gruut-ipa/contents/pyproject.toml failed with 403: Forbidden
+2026-06-11 18:16:48,805 [INFO] Setting next backoff to 520.195082s
+2026-06-11 18:25:37,161 [INFO]   ✓ rhasspy/gruut-ipa ★105 score=65 py=>=3.6 tests=6 docker=no
+2026-06-11 18:25:53,001 [INFO]   ✓ snok/drf-openapi-tester ★115 score=74 py=? tests=10 docker=no
+2026-06-11 18:28:46,074 [INFO]   ✓ davedoesdev/python-jwt ★222 score=68 py=>=3.6 tests=14 docker=no
+2026-06-11 18:28:56,297 [INFO]   ✓ DeachSword/CHRLINE ★175 score=37 py=? tests=3 docker=no
+2026-06-11 18:31:37,791 [INFO]   ✓ ray-project/tune-sklearn ★468 score=65 py=? tests=5 docker=no
+2026-06-11 18:32:39,777 [INFO]   ✓ PyCQA/pydocstyle ★1120 score=83 py=? tests=7 docker=no
+2026-06-11 18:34:26,557 [INFO]   ✓ bureaucratic-labs/dostoevsky ★322 score=50 py=? tests=3 docker=no
+2026-06-11 18:35:09,590 [INFO]   ✓ tudorelu/pyjuque ★457 score=40 py=? tests=3 docker=no
+2026-06-11 18:35:18,763 [INFO]   ✓ femueller/python-n26 ★194 score=70 py=? tests=9 docker=yes
+2026-06-11 18:36:44,885 [INFO]   ✓ hayabhay/frogbase ★775 score=50 py=? tests=3 docker=no
+2026-06-11 18:38:09,847 [INFO]   ✓ continuum-llms/chatgpt-memory ★529 score=50 py=? tests=3 docker=no
+2026-06-11 18:41:30,946 [INFO]   ✓ K024/chatglm-q ★55 score=33 py=? tests=3 docker=no
+2026-06-11 18:41:37,873 [INFO]   ✓ poliastro/poliastro ★1012 score=108 py=>=3.8 tests=12 docker=yes
+2026-06-11 18:42:51,383 [INFO]   ✓ kakaobrain/trident ★183 score=64 py=? tests=25 docker=no
+2026-06-11 18:43:22,144 [INFO]   ✓ Ljzd-PRO/Mys_Goods_Tool ★433 score=57 py=? tests=3 docker=no
+2026-06-11 18:43:59,870 [INFO]   ✓ LineIndent/material_design_flet ★67 score=43 py=? tests=3 docker=no
+2026-06-11 18:44:30,895 [INFO]   ✓ swimlane/pyattck ★479 score=85 py=>=3.6, <4 tests=9 docker=yes
+2026-06-11 18:44:40,604 [INFO]   ✓ LedgerHQ/btchip-python ★67 score=38 py=? tests=5 docker=no
+2026-06-11 18:46:50,866 [INFO]   ✓ dmlc/gluon-nlp ★2546 score=71 py=>=3.6 tests=32 docker=no
+2026-06-11 18:48:18,685 [INFO]   ✓ facebookresearch/pyrobot ★2311 score=78 py=? tests=10 docker=yes
+2026-06-11 18:48:37,594 [INFO]   ✓ obendidi/httpx-cache ★54 score=55 py=>=3.8 tests=4 docker=no
+2026-06-11 18:53:02,370 [INFO]   ✓ Kludex/fastapi-responses ★103 score=57 py=? tests=3 docker=no
+2026-06-11 18:53:36,093 [INFO]   ✓ getsentry/raven-aiohttp ★88 score=56 py=? tests=5 docker=no
+2026-06-11 18:55:48,509 [INFO]   ✓ pyathena-dev/PyAthenaJDBC ★94 score=63 py=? tests=5 docker=no
+2026-06-11 18:57:32,495 [INFO]   ✓ bytedance/DiffusionEngine ★91 score=38 py=? tests=7 docker=no
+2026-06-11 18:59:22,963 [INFO]   ✓ iterative/mlem ★718 score=75 py=>=3.6 tests=5 docker=no
+2026-06-11 19:01:07,811 [INFO]   ✓ junhoyeo/threads-py ★68 score=50 py=? tests=20 docker=no
+2026-06-11 19:03:11,447 [INFO]   ✓ monero-ecosystem/monero-python ★253 score=60 py=? tests=13 docker=no
+2026-06-11 19:04:04,926 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:api language:P...
+2026-06-11 19:04:16,816 [INFO]   ✓ tinkoffjournal/freddie ★76 score=53 py=>=3.6 tests=11 docker=no
+2026-06-11 19:04:26,730 [INFO]   ✓ gcushen/mezzanine-api ★90 score=48 py=? tests=6 docker=no
+2026-06-11 19:04:34,970 [INFO]   ✓ ellisonleao/pyshorteners ★403 score=63 py=>=3.6 tests=16 docker=no
+2026-06-11 19:04:37,374 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:cli language:P...
+2026-06-11 19:04:58,359 [INFO]   ✓ google/gif-for-cli ★2954 score=63 py=? tests=5 docker=no
+2026-06-11 19:05:25,523 [INFO]   ✓ kk6/poetrify ★50 score=45 py=? tests=3 docker=no
+2026-06-11 19:06:24,174 [INFO]   ✓ jkwill87/stonky ★231 score=57 py=>=3.7 tests=3 docker=no
+2026-06-11 19:06:27,184 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:web language:P...
+2026-06-11 19:06:56,576 [INFO]   ✓ turbulette/turbulette ★64 score=53 py=? tests=7 docker=no
+2026-06-11 19:07:23,818 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:library langua...
+2026-06-11 19:07:40,753 [INFO]   ✓ finos/datahub ★80 score=48 py=? tests=13 docker=no
+2026-06-11 19:07:56,102 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:machine-learni...
+2026-06-11 19:09:07,804 [INFO]   ✓ PetrochukM/PyTorch-NLP ★2227 score=58 py=>=3.6 tests=3 docker=no
+2026-06-11 19:09:39,117 [INFO]   ✓ thinkingmachines/christmAIs ★90 score=63 py=? tests=3 docker=yes
+2026-06-11 19:10:22,095 [WARNING] Rate limit low (29). Sleeping 60s...
+2026-06-11 19:11:32,631 [WARNING] Rate limit low (8). Sleeping 60s...
+2026-06-11 19:12:36,160 [INFO] Request GET /repos/AFAgarap/cnn-svm/contents/docker-compose.yml failed with 403: Forbidden
+2026-06-11 19:12:36,161 [INFO] Setting next backoff to 773.838713s
+2026-06-11 19:25:57,243 [INFO]   ✓ uber/fiber ★1046 score=86 py=? tests=10 docker=yes
+2026-06-11 19:26:43,759 [INFO]   ✓ caltechlibrary/handprint ★189 score=60 py=>= 3.8 tests=4 docker=no
+2026-06-11 19:27:10,882 [INFO]   ✓ comtravo/ctparse ★130 score=65 py=? tests=10 docker=no
+2026-06-11 19:28:13,394 [INFO]   ✓ fcakyon/pywhisper ★90 score=43 py=>=3.7 tests=4 docker=no
+2026-06-11 19:28:42,353 [INFO]   ✓ google/tangent ★2323 score=58 py=? tests=16 docker=no
+2026-06-11 19:30:42,287 [INFO]   ✓ sberbank-ai-lab/RePlay ★73 score=50 py=? tests=9 docker=no
+2026-06-11 19:31:23,156 [INFO]   ✓ runwayml/model-sdk ★106 score=60 py=>=3.6 tests=4 docker=no
+2026-06-11 19:32:39,551 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:data-science l...
+2026-06-11 19:32:59,570 [INFO]   ✓ multimeric/PandasSchema ★192 score=47 py=? tests=6 docker=no
+2026-06-11 19:33:20,852 [INFO]   ✓ ReagentX/purple_air_api ★53 score=43 py=>=3.6 tests=3 docker=no
+2026-06-11 19:33:42,429 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:automation lan...
+2026-06-11 19:34:14,811 [INFO]   ✓ telekom-security/explo ★194 score=42 py=? tests=7 docker=no
+2026-06-11 19:34:32,260 [INFO]   ✓ golemhq/golem ★479 score=60 py=? tests=4 docker=no
+2026-06-11 19:34:34,664 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:backend langua...
+2026-06-11 19:34:57,569 [INFO] 
+  Query: language:Python archived:true pushed:2022-01-01..2024-06-01 topic:scraping langu...
+2026-06-11 19:35:12,222 [INFO] 
+Passed: 126 | Rejected: 1025
+2026-06-11 19:35:12,222 [INFO]   insufficient_tests                  445
+2026-06-11 19:35:12,222 [INFO]   no_setup_file                       266
+2026-06-11 19:35:12,222 [INFO]   no_license                          99
+2026-06-11 19:35:12,222 [INFO]   license                             80
